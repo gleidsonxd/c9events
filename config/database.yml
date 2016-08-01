@@ -1,0 +1,6 @@
+development:
+    adapter: postgresql
+    database: eventosdb
+    username: ubuntu
+    password: root
+    host: localhost
