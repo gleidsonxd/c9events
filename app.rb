@@ -54,12 +54,54 @@ end
 #delete  '/sevicos/:id'
 
 #Rotas Usuario#
-#get     '/usuarios'
-#get     '/usuarios/:id'
-#post    '/usuarios'
-#put     '/usuarios/:id'
-#delete  '/usuarios/:id'
-#
+get     '/usuarios' do
+    content_type :json
+    usuarios = Usuario.all
+    usuarios.to_json
+end
+get     '/usuarios/:id' do
+    content_type :json
+    usuario = Usuario.find(params[:id])
+    usuario.to_json
+    
+end
+post    '/usuarios' do
+    content_type :json
+    usuario = Usuario.new params[:usuario]
+    if usuario.save
+        status 201
+    else
+        status 500
+        json usuario.errors.full_messages#implementar validação
+    end
+    
+end
+
+put     '/usuarios/:id' do
+    content_type :json
+    usuario = Usuario.find(params[:id])   
+    if usuario.update_attributes (params[:usuario])
+        status 200
+        usuario.to_json
+    else
+        status 500
+        json usuario.errors.full_messages
+    end
+end
+
+delete  '/usuarios/:id' do
+    content_type :json
+    usuario = Usuario.find(params[:id])
+    if usuario.destroy
+        status 200
+        json "O usuario foi removido"
+    else
+        status 500
+        json "Ocorreu um erro ao remover o usuario"
+    end
+end
+
+
 #Rotas Lugar
 get     '/lugars' do
     content_type :json 
@@ -93,6 +135,7 @@ put     '/lugars/:id' do
         json lugar.errors.full_messages
     end
 end
+
 delete  '/lugars/:id' do 
     content_type :json
     lugar = Lugar.find(params[:id])
