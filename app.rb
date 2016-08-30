@@ -7,51 +7,158 @@ require './models/usuario'
 require './models/lugar'
 require './models/servico'
 require './models/coord'
+#require './models/teste'
+require './lib/sinatra/application_helper'
+require 'pony'
+
+helpers ApplicationHelper
 
 
 get '/' do
     erb :index
 end
 
-#post '/submit' do
- #       @model = Model.new(params[:model])
-  #      if @model.save
-   #            redirect '/models'
-    #    else
-    #            "Sorry, there was an error!"
-     #   end
-#end
+get '/teste' do
+    @to = 'gleidsonsou@gmail.com'
+    @body = 'Ola este é um teste'
+    @subject = "Ola assunto teste"
+    mail(to: @to, body: @body, subject: @subject)
+end
 
-#get '/models' do
- #   @models = Model.all
-  #  erb :models
-#end
-
-# post '/create' do
-#     evento = Evento.new
-#     evento.save
-#     'ok'
-# end
-
-# get '/create' do
-#     evento = Evento.new
-#     evento.save
-#     'ok'
-# end
 
 #Rotas Eventos
-#get     '/eventos'
-#get     '/eventos/:id'
-#post    '/eventos'
-#put     '/eventos/:id'
-#delete  '/eventos/:id'
+get     '/eventos' do
+    content_type :json
+    eventos = Evento.all
+    eventos.to_json
+end
+get     '/eventos/:id' do
+    content_type :json
+    evento = Evento.find(params[:id])
+    evento.to_json
+end
+post    '/eventos' do
+    content_type :json
+    evento = Evento.new params[:evento]
+    
+    if(evento.usuario.admin == true) #verificação do admin
+        lugares = params[:lugares].split(',')
+        lugares.each do |l|
+            evento.lugars << Lugar.find(l)
+        end
+        servicos = params[:servicos].split(',')
+        servicos.each do |s|
+            evento.servicos << Servico.find(s) 
+        end
+        if evento.save
+            status 201
+        else
+            status 500
+            json evento.errors.full_messages#implementar validação
+        end 
+        
+    else #Fim da verificação do admin
+    puts"Usuario não é admin"
+        if params[:lugares] != ''
+            lugares = params[:lugares].split(',')
+            lugares.each do |l|
+                evento.lugars << Lugar.find(l)
+            end
+            
+        else
+            puts "lista de Lugares vazia"
+        end
+        servicos = params[:servicos].split(',')
+        if valida_evento_data(servicos,evento.data_ini)
+            servicos.each do |s|
+                evento.servicos << Servico.find(s) 
+            end
+            if evento.save
+                status 201
+            else
+                status 500
+                json evento.errors.full_messages#implementar validação
+            end 
+        else
+            status 500
+            json evento.errors.full_messages#implementar validação
+        end
+    end     
+     
+   
+    
+end
+put     '/eventos/:id' do
+    content_type :json
+    evento = Evento.find(params[:id])   
+    if evento.update_attributes (params[:evento])
+        status 200
+        evento.to_json
+    else
+        status 500
+        json evento.errors.full_messages
+    end
+end
+delete  '/eventos/:id' do
+    content_type :json
+    evento = Evento.find(params[:id]) 
+    
+    if evento.destroy
+        status 200
+        json "O evento foi removido"
+    else
+        status 500
+        json "Ocorreu um erro ao remover o evento"
+    end
+end
 
 #Rotas Servico
-#get     '/sevicos'
-#get     '/sevicos/:id'
-#post    '/sevicos'
-#put     '/sevicos/:id'
-#delete  '/sevicos/:id'
+get     '/servicos' do
+    content_type :json
+    servicos = Servico.all
+    servicos.to_json
+end
+
+get     '/servicos/:id' do
+    content_type :json
+    servico = Servico.find(params[:id])
+    servico.to_json
+end
+
+post    '/servicos' do
+    content_type :json
+    servico = Servico.new params[:servico]
+    if servico.save
+        status 201
+    else
+        status 500
+        json servico.errors.full_messages#implementar validação
+        
+    end
+end
+put     '/servicos/:id' do
+    content_type :json
+    servico = Servico.find(params[:id])   
+    if servico.update_attributes (params[:servico])
+        status 200
+        servico.to_json
+    else
+        status 500
+        json servico.errors.full_messages
+    end
+end
+
+delete  '/servicos/:id' do
+    content_type :json
+    servico = Servico.find(params[:id])   
+    if servico.destroy
+        status 200
+        json "O servico foi removido"
+    else
+        status 500
+        json "Ocorreu um erro ao remover o servico"
+    end
+end
 
 #Rotas Usuario#
 get     '/usuarios' do
@@ -121,7 +228,7 @@ post    '/lugars' do
         status 201
     else
         status 500
-        json lugar.errors.full_messages#implementar validação
+        json lugar.errors.full_messages
     end
 end
 put     '/lugars/:id' do
@@ -169,7 +276,7 @@ post     '/coords' do
         status 201
     else
         status 500
-        json coord.errors.full_messages#implementar validação
+        json coord.errors.full_messages
     end
 end
 

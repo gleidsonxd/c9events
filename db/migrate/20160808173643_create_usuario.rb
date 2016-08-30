@@ -4,7 +4,7 @@ class CreateUsuario < ActiveRecord::Migration
             t.string :nome
             t.string :email
             t.string :matricula
-            
+            t.boolean :admin,default: false
            
             t.timestamps
       end

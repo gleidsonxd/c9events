@@ -5,6 +5,7 @@ class CreateEvento < ActiveRecord::Migration
             t.text :descricao
             t.date :data_ini
             t.date :data_fim
+            t.time :hora
             t.belongs_to :usuario, index: true
             
             t.timestamps

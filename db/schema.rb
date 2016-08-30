@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160815165611) do
+ActiveRecord::Schema.define(:version => 20160822170256) do
 
   create_table "coords", :force => true do |t|
     t.string "nome"
@@ -22,15 +22,25 @@ ActiveRecord::Schema.define(:version => 20160815165611) do
     t.text     "descricao"
     t.date     "data_ini"
     t.date     "data_fim"
+    t.time     "hora"
     t.integer  "usuario_id"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
 
+  create_table "eventos_lugars", :id => false, :force => true do |t|
+    t.integer "lugar_id"
+    t.integer "evento_id"
+  end
+
+  create_table "eventos_servicos", :id => false, :force => true do |t|
+    t.integer "servico_id"
+    t.integer "evento_id"
+  end
+
   create_table "lugars", :force => true do |t|
     t.string  "nome"
     t.integer "quantidade"
-    t.integer "evento_id"
   end
 
   create_table "servicos", :force => true do |t|
@@ -39,17 +49,13 @@ ActiveRecord::Schema.define(:version => 20160815165611) do
     t.integer "coord_id"
   end
 
-  create_table "servicos_eventos", :id => false, :force => true do |t|
-    t.integer "servico_id"
-    t.integer "event_id"
-  end
-
   create_table "usuarios", :force => true do |t|
     t.string   "nome"
     t.string   "email"
     t.string   "matricula"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.boolean  "admin",      :default => false
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
   end
 
 end

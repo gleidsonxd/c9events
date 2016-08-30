@@ -6,6 +6,7 @@ gem 'activerecord'
 gem 'sinatra-activerecord'
 gem 'pg'
 gem "rake"
+gem "pony"
 
 group :development do
     gem "sqlite3"
