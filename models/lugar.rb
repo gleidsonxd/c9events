@@ -3,4 +3,6 @@ class Lugar <ActiveRecord::Base
     
     validates :nome, presence: true
     validates :quantidade, numericality:{ only_integer: true}
+    
+   
 end

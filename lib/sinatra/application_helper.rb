@@ -1,7 +1,20 @@
 require 'sinatra/base'
 require 'pony'
+require 'gmail'
 
 module ApplicationHelper
+  
+  def protected!
+    return if authorized?
+    headers['WWW-Authenticate'] = 'Basic realm="Restricted Area"'
+    halt 401, "Not authorized\n"
+  end
+
+  def authorized?
+    @auth ||=  Rack::Auth::Basic::Request.new(request.env)
+    @auth.provided? and @auth.basic? and @auth.credentials and @auth.credentials == ['admin', 'admin']
+  end
+  
   def teste
     "Hello Mundo"
   end
@@ -19,13 +32,13 @@ module ApplicationHelper
       end
     end
     
-    contsDia = 86400
+    #contsDia = 86400
     
-    time= Time.new
+    time= Time.now
     servicos.each do |s|
       serv = Servico.find(s)
-      puts time + (serv.tempo*contsDia)
-      if time + (serv.tempo*contsDia)<= eventoData
+      puts time + serv.tempo.days
+      if time + (serv.tempo.days) <= eventoData
           puts "EVENTO OK"
           
       else
@@ -37,31 +50,39 @@ module ApplicationHelper
     end
   end
   
-  def mail(args)
-  Pony.mail :to => args[:to],
-            :from => 'devlaravelx@gmail.com',
-            :cc => args[:cc],
-            :via => :smtp,
-            :body => args[:body],
-            :bcc => args[:bcc],
-            :subject => args[:subject],
-            :via_options => {
-              :host                 => 'smtp.gmail.com',
-              :port                 =>  '25',
-              :enable_starttls_auto => true,
-              :user_name            => 'devlaravelx',
-              :password             => 'laravel1111',
-              :authentication       => :plain,
-              :domain               => 'gmail.com',
-              
-              :ssl => true
-            }
-     # return m
-    #mail(to: args[:to],
-    #     cc: args[:cc],
-    #     bcc: args[:bcc],
-    #     body: args[:body],
-    #     subject: args[:subject]).deliver
+  def mail(dest, assunto)
+    gmail =  Gmail.new("devlaravelx","laravel1111")
+      email = gmail.generate_message do
+        to dest
+        subject "TESTE"
+        body assunto
+      end
+      gmail.deliver(email)    
+    gmail.logout  
   end
   
+  def validaservico(evento, servico_ids)
+    # puts "AKI"
+    # puts servico_ids
+    # puts"FIM"
+    
+      evento.servicos.each do |s|
+        # if s.id != servico_ids
+        #   puts "DIFERENTE"
+        # else
+        #   puts"IGUAL"
+        # end
+        t = (s.tempo*0.3).round
+          if Time.now <=  evento.created_at + t.days
+            puts "Pode alterar"
+            return true
+          else
+            puts "Não pode alterar"
+            return false
+            #return false
+          end
+        puts 
+      
+      end
+    end
 end

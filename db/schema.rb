@@ -20,9 +20,8 @@ ActiveRecord::Schema.define(:version => 20160822170256) do
   create_table "eventos", :force => true do |t|
     t.string   "nome"
     t.text     "descricao"
-    t.date     "data_ini"
-    t.date     "data_fim"
-    t.time     "hora"
+    t.datetime "data_ini"
+    t.datetime "data_fim"
     t.integer  "usuario_id"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false

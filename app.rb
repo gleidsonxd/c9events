@@ -18,11 +18,20 @@ get '/' do
     erb :index
 end
 
+get '/teste2' do
+    protected!
+    
+    "hello"
+end
+
 get '/teste' do
-    @to = 'gleidsonsou@gmail.com'
-    @body = 'Ola este é um teste'
-    @subject = "Ola assunto teste"
-    mail(to: @to, body: @body, subject: @subject)
+    # @to = 'gleidsonsou@gmail.com'
+    # @body = 'Ola este é um teste'
+    # @subject = "Ola assunto teste"
+    # mail(to: @to, body: @body, subject: @subject)
+    $dest = "gleidsonsou@gmail.com"
+    $assunto ="New topic2"
+    mail($dest,$assunto)
 end
 
 
@@ -42,13 +51,21 @@ post    '/eventos' do
     evento = Evento.new params[:evento]
     
     if(evento.usuario.admin == true) #verificação do admin
-        lugares = params[:lugares].split(',')
-        lugares.each do |l|
-            evento.lugars << Lugar.find(l)
+        if params[:lugares] != ''
+            lugares = params[:lugares].split(',')
+            lugares.each do |l|
+                evento.lugars << Lugar.find(l)
+            end
+        else
+            puts "lista de Lugares vazia"
         end
-        servicos = params[:servicos].split(',')
-        servicos.each do |s|
-            evento.servicos << Servico.find(s) 
+        if params[:servicos] != ''
+            servicos = params[:servicos].split(',')
+            servicos.each do |s|
+                evento.servicos << Servico.find(s) 
+            end
+        else
+            puts "lista de Serviço vazia"
         end
         if evento.save
             status 201
@@ -68,35 +85,52 @@ post    '/eventos' do
         else
             puts "lista de Lugares vazia"
         end
-        servicos = params[:servicos].split(',')
-        if valida_evento_data(servicos,evento.data_ini)
-            servicos.each do |s|
-                evento.servicos << Servico.find(s) 
-            end
-            if evento.save
-                status 201
+        
+        if params[:servicos] != ''
+            servicos = params[:servicos].split(',')
+            if valida_evento_data(servicos,evento.data_ini)
+                servicos.each do |s|
+                    evento.servicos << Servico.find(s) 
+                end
+                if evento.save
+                    status 201
+                else
+                    status 500
+                    json evento.errors.full_messages#implementar validação
+                end 
             else
-                status 500
-                json evento.errors.full_messages#implementar validação
-            end 
-        else
             status 500
             json evento.errors.full_messages#implementar validação
         end
+        
+        else
+            puts "lista de Serviço vazia"
+        end
+        
+        
     end     
      
    
     
 end
 put     '/eventos/:id' do
+    #protected!
     content_type :json
-    evento = Evento.find(params[:id])   
-    if evento.update_attributes (params[:evento])
-        status 200
-        evento.to_json
+    evento = Evento.find(params[:id])
+    if validaservico(evento,params[:evento][:servico_ids])
+        #evento.servicos.destroy
+        
+        if evento.update_attributes (params[:evento])
+            status 200
+            evento.to_json
+        else
+            status 500
+            json evento.errors.full_messages
+        end
     else
         status 500
         json evento.errors.full_messages
+    
     end
 end
 delete  '/eventos/:id' do

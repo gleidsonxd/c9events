@@ -1,0 +1,25 @@
+ # Pony.mail :to => args[:to],
+  #           :from => 'devlaravelx@gmail.com',
+  #           :cc => args[:cc],
+  #           :via => :smtp,
+  #           :body => args[:body],
+  #           :bcc => args[:bcc],
+  #           :subject => args[:subject],
+  #           :via_options => {
+  #           #  :host                 =>'eventos-gleidsonxd.c9users.io',
+  #             :address              => 'smtp.gmail.com',
+  #             :port                 =>  '587',
+  #             :enable_starttls_auto => true,
+  #             :user_name            => 'devlaravelx',
+  #             :password             => 'laravel1111',
+  #             :authentication       => :plain,
+  #             :domain               => 'gmail.com',
+              
+  #           # :ssl => true
+  #           }
+     # return m
+    #mail(to: args[:to],
+    #     cc: args[:cc],
+    #     bcc: args[:bcc],
+    #     body: args[:body],
+    #     subject: args[:subject]).deliver

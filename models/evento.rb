@@ -3,6 +3,13 @@ class Evento <ActiveRecord::Base
     has_and_belongs_to_many :lugars
     has_and_belongs_to_many :servicos
     
-    validates :nome,  presence: true
+    #validates :nome,  presence: true
+    
+    attr_accessible :nome, :data_ini,:data_fim, :usuario_id, :servico, :servico_tempo, :servico_id, :servico_ids, :lugar, :lugar_id, :lugar_ids
+    attr_accessible :servicos_attributes ,:lugars_attributes
+    
+    accepts_nested_attributes_for :lugars, allow_destroy: true 
+    
+    accepts_nested_attributes_for :servicos, allow_destroy: true 
         
 end
