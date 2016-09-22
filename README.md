@@ -412,11 +412,12 @@ HTTP/1.1 200 Ok
 
 ```
 param nome,        String,      required, nome da coordenação
+param email,       String,      required, email da coordenação
 ```
 
 ```
 POST /coords
-curl -d "nome=Coordenacao_eventos"localhost:3000/coords
+curl -d "coord[nome]=Coordenacao_eventos&coord[email]=coord@email.com"localhost:3000/coords
 
 Retorna o ID da coordenação criada:
 HTTP/1.1 200 Ok
@@ -432,12 +433,13 @@ O usuario administrado vai poder alterar os dados dos locais cadastrados. Para a
 
 ```
 param nome,        String,      required, nome da coordenação
+param email,       String,      required, email da coordenação
 
 ```
 
 ```
 PUT /coords
-curl -X PUT -d "id=1&nome=Coordenacao_eventos"localhost:3000/coords
+curl -X PUT -d "coord[nome]=Coordenacao_eventos"localhost:3000/coords/1
 
 Retorna o ID da coordenação alterada:
 HTTP/1.1 200 Ok
