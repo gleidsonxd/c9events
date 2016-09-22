@@ -9,7 +9,7 @@ require './models/servico'
 require './models/coord'
 #require './models/teste'
 require './lib/sinatra/application_helper'
-require 'pony'
+
 
 helpers ApplicationHelper
 
@@ -25,13 +25,9 @@ get '/teste2' do
 end
 
 get '/teste' do
-    # @to = 'gleidsonsou@gmail.com'
-    # @body = 'Ola este é um teste'
-    # @subject = "Ola assunto teste"
-    # mail(to: @to, body: @body, subject: @subject)
-    $dest = "gleidsonsou@gmail.com"
-    $assunto ="New topic2"
-    mail($dest,$assunto)
+    dest = "gleidsonsou@gmail.com"
+    assunto ="LOL hue3"
+    mail(dest,assunto)
 end
 
 
@@ -41,11 +37,14 @@ get     '/eventos' do
     eventos = Evento.all
     eventos.to_json
 end
+
 get     '/eventos/:id' do
     content_type :json
     evento = Evento.find(params[:id])
+   
     evento.to_json
 end
+
 post    '/eventos' do
     content_type :json
     evento = Evento.new params[:evento]
@@ -62,6 +61,7 @@ post    '/eventos' do
         if params[:servicos] != ''
             servicos = params[:servicos].split(',')
             servicos.each do |s|
+                mailToCoord(s,"create")
                 evento.servicos << Servico.find(s) 
             end
         else
@@ -90,6 +90,7 @@ post    '/eventos' do
             servicos = params[:servicos].split(',')
             if valida_evento_data(servicos,evento.data_ini)
                 servicos.each do |s|
+                    mailToCoord(s,"create")
                     evento.servicos << Servico.find(s) 
                 end
                 if evento.save
@@ -101,10 +102,17 @@ post    '/eventos' do
             else
             status 500
             json evento.errors.full_messages#implementar validação
-        end
+            end
         
         else
-            puts "lista de Serviço vazia"
+            puts "EVENTO INDEPENDENTE"
+            if evento.save
+                status 201
+            else
+                status 500
+                json evento.errors.full_messages#implementar validação
+            end 
+            
         end
         
         
@@ -121,6 +129,7 @@ put     '/eventos/:id' do
         #evento.servicos.destroy
         
         if evento.update_attributes (params[:evento])
+            #mailToCoord(create)
             status 200
             evento.to_json
         else

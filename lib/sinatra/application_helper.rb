@@ -1,5 +1,4 @@
 require 'sinatra/base'
-require 'pony'
 require 'gmail'
 
 module ApplicationHelper
@@ -19,8 +18,25 @@ module ApplicationHelper
     "Hello Mundo"
   end
   
-  def h(text)
-    Rack::Utils.escape_html(text)
+  def mailToCoord(servico_id,metodo)
+    serv = Servico.find(servico_id)
+    puts serv.coord.nome
+    
+    if metodo == "create"
+      assunto = "Um Evento foi criado para a Coord "+serv.coord.nome+"."
+      mail(serv.coord.email,assunto)
+    
+    elsif metodo == "update"
+      assunto = "Um Evento que a Coord "+serv.coord.nome+" fazia parte foi atualizado."
+      mail(serv.coord.email,assunto)
+    else
+      assunto = "Um Evento que a Coord "+serv.coord.nome+" fazia parte foi deletado."
+      mail(serv.coord.email,assunto)
+    end
+    
+   
+      
+    
   end
  
   def valida_evento_data (servicos,eventoData)
@@ -32,7 +48,6 @@ module ApplicationHelper
       end
     end
     
-    #contsDia = 86400
     
     time= Time.now
     servicos.each do |s|
@@ -51,38 +66,30 @@ module ApplicationHelper
   end
   
   def mail(dest, assunto)
-    gmail =  Gmail.new("devlaravelx","laravel1111")
-      email = gmail.generate_message do
-        to dest
-        subject "TESTE"
-        body assunto
+    
+    Gmail.connect("devlaravelx","laravel1111") do |gmail|
+      if gmail.logged_in?
+        email = gmail.compose do
+          to dest
+          subject "TESTE"
+          body assunto
+        end
+        email.deliver! # or: gmail.deliver(email)
       end
-      gmail.deliver(email)    
-    gmail.logout  
+    end
   end
   
   def validaservico(evento, servico_ids)
-    # puts "AKI"
-    # puts servico_ids
-    # puts"FIM"
-    
-      evento.servicos.each do |s|
-        # if s.id != servico_ids
-        #   puts "DIFERENTE"
-        # else
-        #   puts"IGUAL"
-        # end
-        t = (s.tempo*0.3).round
+        evento.servicos.each do |s|
+          t = (s.tempo*0.3).round
           if Time.now <=  evento.created_at + t.days
             puts "Pode alterar"
             return true
           else
             puts "Não pode alterar"
             return false
-            #return false
           end
-        puts 
-      
-      end
-    end
+          
+        end
+  end
 end

@@ -5,8 +5,8 @@ class Evento <ActiveRecord::Base
     
     #validates :nome,  presence: true
     
-    attr_accessible :nome, :data_ini,:data_fim, :usuario_id, :servico, :servico_tempo, :servico_id, :servico_ids, :lugar, :lugar_id, :lugar_ids
-    attr_accessible :servicos_attributes ,:lugars_attributes
+    attr_accessor :servico, :servico_tempo, :servico_id, :servico_ids, :lugar, :lugar_id, :lugar_ids
+    attr_accessor :servicos_attributes, :lugars_attributes
     
     accepts_nested_attributes_for :lugars, allow_destroy: true 
     
