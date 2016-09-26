@@ -158,49 +158,75 @@ end
 #Rotas Servico
 get     '/servicos' do
     content_type :json
-    servicos = Servico.all
-    servicos.to_json
+    if valida_admin(params[:usuarioid])
+        servicos = Servico.all
+        servicos.to_json
+    else
+        status 403
+        json "Usuario sem acesso suficiente."
+    end 
 end
 
 get     '/servicos/:id' do
     content_type :json
-    servico = Servico.find(params[:id])
-    servico.to_json
+    if valida_admin(params[:usuarioid])
+        servico = Servico.find(params[:id])
+        servico.to_json
+    else
+        status 403
+        json "Usuario sem acesso suficiente."
+    end 
 end
 
 post    '/servicos' do
-    content_type :json
-    servico = Servico.new params[:servico]
-    if servico.save
-        status 201
+    if valida_admin(params[:usuarioid])
+        content_type :json
+        servico = Servico.new params[:servico]
+        if servico.save
+            status 201
+        else
+            status 500
+            json servico.errors.full_messages#implementar validação
+            
+        end
     else
-        status 500
-        json servico.errors.full_messages#implementar validação
-        
-    end
+        status 403
+        json "Usuario sem acesso suficiente."
+    end 
 end
 put     '/servicos/:id' do
     content_type :json
-    servico = Servico.find(params[:id])   
-    if servico.update_attributes (params[:servico])
-        status 200
-        servico.to_json
+    if valida_admin(params[:usuarioid])
+        servico = Servico.find(params[:id])   
+        if servico.update_attributes (params[:servico])
+            status 200
+            servico.to_json
+        else
+            status 500
+            json servico.errors.full_messages
+        end
     else
-        status 500
-        json servico.errors.full_messages
-    end
+        status 403
+        json "Usuario sem acesso suficiente."
+    end 
 end
 
 delete  '/servicos/:id' do
     content_type :json
-    servico = Servico.find(params[:id])   
-    if servico.destroy
-        status 200
-        json "O servico foi removido"
+    if valida_admin(params[:usuarioid])
+        servico = Servico.find(params[:id])   
+        if servico.destroy
+            status 200
+            json "O servico foi removido"
+        else
+            status 500
+            json "Ocorreu um erro ao remover o servico"
+        end
     else
-        status 500
-        json "Ocorreu um erro ao remover o servico"
-    end
+        status 403
+        json "Usuario sem acesso suficiente."
+    end 
+
 end
 
 #Rotas Usuario#
@@ -254,95 +280,146 @@ end
 
 #Rotas Lugar
 get     '/lugars' do
-    content_type :json 
-    lugares = Lugar.all
-    lugares.to_json
+    content_type :json
+    if valida_admin(params[:usuarioid])
+        lugares = Lugar.all
+        lugares.to_json
+    else
+        status 403
+        json "Usuario sem acesso suficiente."
+    end        
 end
 
 get     '/lugars/:id' do
     content_type :json
-    lugar = Lugar.find(params[:id])
-    lugar.to_json
+    if valida_admin(params[:usuarioid])
+        lugar = Lugar.find(params[:id])
+        lugar.to_json
+    else
+        status 403
+        json "Usuario sem acesso suficiente."
+    end    
 end
 post    '/lugars' do
     content_type :json
-    lugar = Lugar.new params[:lugar]
-    if lugar.save
-        status 201
+    if valida_admin(params[:usuarioid])
+        lugar = Lugar.new params[:lugar]
+        if lugar.save
+            status 201
+        else
+            status 500
+            json lugar.errors.full_messages
+        end
     else
-        status 500
-        json lugar.errors.full_messages
+        status 403
+        json "Usuario sem acesso suficiente."
     end
 end
 put     '/lugars/:id' do
     content_type :json
-    lugar = Lugar.find(params[:id])   
-    if lugar.update_attributes (params[:lugar])
-        status 200
-        lugar.to_json
+    if valida_admin(params[:usuarioid])
+        lugar = Lugar.find(params[:id])   
+        if lugar.update_attributes (params[:lugar])
+            status 200
+            lugar.to_json
+        else
+            status 500
+            json lugar.errors.full_messages
+        end
     else
-        status 500
-        json lugar.errors.full_messages
+        status 403
+        json "Usuario sem acesso suficiente."
     end
 end
 
 delete  '/lugars/:id' do 
     content_type :json
-    lugar = Lugar.find(params[:id])
-    if lugar.destroy
-        status 200
-        json "O local foi removido"
+    if valida_admin(params[:usuarioid])
+        lugar = Lugar.find(params[:id])
+        if lugar.destroy
+            status 200
+            json "O local foi removido"
+        else
+            status 500
+            json "Ocorreu um erro ao remover o local"
+        end
     else
-        status 500
-        json "Ocorreu um erro ao remover o local"
+        status 403
+        json "Usuario sem acesso suficiente."
     end
 end
 
 #Rotas Coordenação
 get      '/coords' do
     content_type :json
-    coords = Coord.all
-    coords.to_json
     
+    if valida_admin(params[:usuarioid])
+        coords = Coord.all
+        coords.to_json
+    else
+        status 403
+        json "Usuario sem acesso suficiente."
+    end
+       
 end
 
 get      '/coords/:id' do
     content_type :json
-    coord = Coord.find(params[:id])
-    coord.to_json
+    if valida_admin(params[:usuarioid])
+        coord = Coord.find(params[:id])
+        coord.to_json
+    else
+        status 403
+        json "Usuario sem acesso suficiente."
+    end
 end
 
 post     '/coords' do
     content_type :json
-    coord = Coord.new params[:coord]
-    if coord.save
-        status 201
+    if valida_admin(params[:usuarioid])
+        coord = Coord.new params[:coord]
+        if coord.save
+            status 201
+        else
+            status 500
+            json coord.errors.full_messages
+        end
     else
-        status 500
-        json coord.errors.full_messages
+        status 403
+        json "Usuario sem acesso suficiente."
     end
 end
 
 put      '/coords/:id' do
     content_type :json
-    coord = Coord.find(params[:id])   
-    if coord.update_attributes (params[:coord])
-        status 200
-        coord.to_json
+    if valida_admin(params[:usuarioid])
+        coord = Coord.find(params[:id])   
+        if coord.update_attributes (params[:coord])
+            status 200
+            coord.to_json
+        else
+            status 500
+            json coord.errors.full_messages
+        end
     else
-        status 500
-        json coord.errors.full_messages
+        status 403
+        json "Usuario sem acesso suficiente."
     end
 end
 
 delete   '/coords/:id' do
     content_type :json
-    coord = Coord.find(params[:id])
-    if coord.destroy
-        status 200
-        json "A coordenação foi removida"
+    if valida_admin(params[:usuarioid])
+        coord = Coord.find(params[:id])
+        if coord.destroy
+            status 200
+            json "A coordenação foi removida"
+        else
+            status 500
+            json "Ocorreu um erro ao remover a coordenação"
+        end
     else
-        status 500
-        json "Ocorreu um erro ao remover a coordenação"
+        status 403
+        json "Usuario sem acesso suficiente."
     end
 end

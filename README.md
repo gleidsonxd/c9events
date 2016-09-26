@@ -122,11 +122,12 @@ Para criar um serviço, deve-se enviar alguns parametros:
 param nome,        String,      required, nome do evento
 param tempo,       Int,         required, tempo para o servico ficar pronto. Tempo em dias
 param coord_id,    Int       required,  id da coordenacao que oferece o servico
+param usuarioid,        Int,      required, ID do usuario logado.
 ```  
 
 ```
 POST /servicos
-curl -d "servico[nome]=Nome_Servico&servico[tempo]=15&servico[coord_id]=1"localhost:3000/servicos
+curl -d "servico[nome]=Nome_Servico&servico[tempo]=15&servico[coord_id]=1&usuarioid=1"localhost:3000/servicos
 
 Retorna o ID do servico criado:
 HTTP/1.1 200 Ok
@@ -144,11 +145,12 @@ O usuario administrador vai poder alterar os serviços. Para atualizar um servi�
 param nome,        String,      required, nome do evento
 param tempo,       Int,         required, tempo para o servico ficar pronto. Tempo em dias
 param coord_id     Int,         required, id da coordenação.
+param usuarioid,        Int,      required, ID do usuario logado.
 ```  
 
 ```
 PUT /servicos/2
-curl -X PUT -d "servico[nome]=Nome_Servico_Mod&servico[tempo]=20"localhost:3000/servicos/2
+curl -X PUT -d "servico[nome]=Nome_Servico_Mod&servico[tempo]=20&usuarioid=1"localhost:3000/servicos/2
 
 
 Retorna o ID do serviço alterado:
@@ -162,10 +164,12 @@ HTTP/1.1 200 Ok
 ###Delete
 
 Um usuario administrador pode apagar um serviço.
-
+```
+param usuarioid,        Int,      required, ID do usuario logado.
+```
 ```
 DELETE /servicos
-curl -X DELETE localhost:3000/servicos/2
+curl -X DELETE -d "usuarioid=1" localhost:3000/servicos/2
 
 Retorna a mensagem de sucesso:
 HTTP/1.1 200 Ok
@@ -177,12 +181,14 @@ HTTP/1.1 200 Ok
 ---
 ###Read
 
-O administrador vai poder ver um serviço específico.Para ver um serviço, deve-se acessar a URL:
-
+O administrador vai poder ver um serviço específico.Para ver um serviço,  deve-se enviar um parametro:
+```
+param usuarioid,        Int,      required, ID do usuario logado.
+```
 ```
 GET/servicos/1
 
-curl localhost:3000/servicos/1
+curl -X GET -d "usuarioid=1" localhost:3000/servicos/1
 
 Retorna o JSON:
 HTTP/1.1 200 Ok
@@ -194,12 +200,14 @@ HTTP/1.1 200 Ok
 ---
 ###List
 
-O administrador vai poder ver todos os serviços cadastrados.Para ver os serviços, deve-se acessar a URL:
-
+O administrador vai poder ver todos os serviços cadastrados.Para ver os serviços,  deve-se enviar um parametro:
+```
+param usuarioid,        Int,      required, ID do usuario logado.
+```
 ```
 GET/servicos
 
-curl localhost:3000/servicos
+curl -X GET -d "usuarioid=1" localhost:3000/servicos
 
 Retorna o JSON:
 HTTP/1.1 200 Ok
@@ -315,11 +323,12 @@ HTTP/1.1 200 Ok
 ```
 param nome,        String,      required, nome do lugar
 param qntPessoas,  Int,         required, quantidade de pessoas
+param usuarioid,        Int,      required, ID do usuario logado.
 ```
 
 ```
 POST /lugars
-curl -d "lugar[nome]=Patio&lugar[qntPessoas]=150"localhost:3000/lugars
+curl -d "lugar[nome]=Patio&lugar[qntPessoas]=150&usuarioid"localhost:3000/lugars
 
 Retorna o ID do lugar criado:
 HTTP/1.1 200 Ok
@@ -336,13 +345,14 @@ O usuario administrador vai poder alterar os dados dos locais cadastrados. Para 
 ```
 param nome,        String,      required, nome do lugar
 param qntPessoas,  Int,         required, quantidade de pessoas
+param usuarioid,        Int,      required, ID do usuario logado.
 
 ```
 
 ```
 
 PUT /lugars/1
-curl -X PUT -d "lugar[nome]=Patio&lugar[qntPessoas]=250"localhost:3000/lugars/1
+curl -X PUT -d "lugar[nome]=Patio&lugar[qntPessoas]=250&usuarioid=1"localhost:3000/lugars/1
 
 Retorna o ID do lugar alterado:
 HTTP/1.1 200 Ok
@@ -355,10 +365,12 @@ HTTP/1.1 200 Ok
 ###Delete
 
 Um usuario administrador pode apagar um lugar cadastrado.
-
+```
+param usuarioid,        Int,      required, ID do usuario logado.
+```
 ```
 DELETE /lugars
-curl -X DELETE localhost:3000/lugars/2
+curl -X DELETE -d "usuarioid=1" localhost:3000/lugars/2
 
 Retorna a mensagem de sucesso:
 HTTP/1.1 200 Ok
@@ -370,12 +382,14 @@ HTTP/1.1 200 Ok
 ---
 ###Read
 
-O administrador vai poder ver os dados de um lugar específico. Para ver um lugar, deve-se acessar a URL:
-
+O administrador vai poder ver os dados de um lugar específico. Para ver um lugar,  deve-se enviar um parametro:
+```
+param usuarioid,        Int,      required, ID do usuario logado.
+```
 ```
 GET/lugars/1
 
-curl localhost:3000/lugars/1
+curl -X GET -d "usuarioid=1" localhost:3000/lugars/1
 
 Retorna o JSON:
 HTTP/1.1 200 Ok
@@ -387,12 +401,15 @@ HTTP/1.1 200 Ok
 ---
 ###List
 
-O administrador vai poder ver todos os lugares cadastrados. Para ver os lugares, deve-se acessar a URL:
+O administrador vai poder ver todos os lugares cadastrados. Para ver os lugares, deve-se enviar um parametro:
+```
+param usuarioid,        Int,      required, ID do usuario logado.
+```
 
 ```
 GET/lugars
 
-curl localhost:3000/lugars
+curl -X GET -d "usuarioid=1" localhost:3000/lugars
 
 Retorna o JSON:
 HTTP/1.1 200 Ok
@@ -413,11 +430,12 @@ HTTP/1.1 200 Ok
 ```
 param nome,        String,      required, nome da coordenação
 param email,       String,      required, email da coordenação
+param usuarioid,        Int,      required, ID do usuario logado.
 ```
 
 ```
 POST /coords
-curl -d "coord[nome]=Coordenacao_eventos&coord[email]=coord@email.com"localhost:3000/coords
+curl -d "coord[nome]=Coordenacao_eventos&coord[email]=coord@email.com&usuarioid=1"localhost:3000/coords
 
 Retorna o ID da coordenação criada:
 HTTP/1.1 200 Ok
@@ -434,12 +452,13 @@ O usuario administrado vai poder alterar os dados dos locais cadastrados. Para a
 ```
 param nome,        String,      required, nome da coordenação
 param email,       String,      required, email da coordenação
+param usuarioid,   Int,         required, ID do usuario logado.
 
 ```
 
 ```
 PUT /coords
-curl -X PUT -d "coord[nome]=Coordenacao_eventos"localhost:3000/coords/1
+curl -X PUT -d "coord[nome]=Coordenacao_eventos&usuarioid=1"localhost:3000/coords/1
 
 Retorna o ID da coordenação alterada:
 HTTP/1.1 200 Ok
@@ -451,11 +470,15 @@ HTTP/1.1 200 Ok
 ---
 ###Delete
 
-Um usuario administrador pode apagar uma coordenação cadastrada.
+Um usuario administrador pode apagar uma coordenação cadastrada, para isso deve-se enviar um parametro:
+
+```
+param usuarioid,        Int,      required, ID do usuario logado.
+```
 
 ```
 DELETE /coords
-curl -X DELETE localhost:3000/coords/2
+curl -X DELETE -d "usuarioid=1" localhost:3000/coords/2
 
 Retorna a mensagem de sucesso:
 HTTP/1.1 200 Ok
@@ -467,12 +490,14 @@ HTTP/1.1 200 Ok
 ---
 ###Read
 
-O administrador vai poder ver os dados de uma coordenação específica. Para ver uma coordenação, deve-se acessar a URL:
-
+O administrador vai poder ver os dados de uma coordenação específica. Para ver uma coordenação, deve-se enviar um parametro:
+```
+param usuarioid,        Int,      required, ID do usuario logado.
+```
 ```
 GET/coords/1
 
-curl localhost:3000/coords/1
+curl -X GET -d "usuarioid=1" localhost:3000/coords/1
 
 Retorna o JSON:
 HTTP/1.1 200 Ok
@@ -485,12 +510,16 @@ HTTP/1.1 200 Ok
 ---
 ###List
 
-O administrador vai poder ver todas as coordenações cadastradas. Para ver as coordenações, deve-se acessar a URL:
+O administrador vai poder ver todas as coordenações cadastradas. Para ver as coordenações, deve-se enviar um parametro:
 
+```
+param usuarioid,        Int,      required, ID do usuario logado.
+```
 ```
 GET/coords
 
-curl localhost:3000/coords
+
+curl -X GET -d "usuarioid=1" localhost:3000/coords
 
 Retorna o JSON:
 HTTP/1.1 200 Ok

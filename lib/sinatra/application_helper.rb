@@ -92,4 +92,15 @@ module ApplicationHelper
           
         end
   end
+  
+  def valida_admin(usuarioid)
+    usuario = Usuario.find(usuarioid)
+    
+    if usuario.admin == true
+      return true
+    else
+      return false
+    end
+  
+  end
 end
