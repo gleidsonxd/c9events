@@ -41,8 +41,10 @@ end
 get     '/eventos/:id' do
     content_type :json
     evento = Evento.find(params[:id])
-   
-    evento.to_json
+    e = evento.to_json + evento.servicos.to_json
+     
+    return e
+    
 end
 
 post    '/eventos' do
