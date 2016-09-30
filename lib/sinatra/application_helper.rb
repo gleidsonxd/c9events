@@ -42,7 +42,7 @@ module ApplicationHelper
   def valida_evento_data (servicos,eventoData)
     evento =  Evento.all
     evento.each do |e|
-      if eventoData == e.data_ini
+      if ((eventoData >= e.data_ini) && (eventoData <= e.data_fim))
         puts "Ja existe um evento nessa data"
         return false
       end
@@ -53,6 +53,7 @@ module ApplicationHelper
     servicos.each do |s|
       serv = Servico.find(s)
       puts time + serv.tempo.days
+      puts eventoData
       if time + (serv.tempo.days) <= eventoData
           puts "EVENTO OK"
           
@@ -79,7 +80,9 @@ module ApplicationHelper
     end
   end
   
-  def validaservico(evento, servico_ids)
+  def validaservico(evento)
+     
+    
         evento.servicos.each do |s|
           t = (s.tempo*0.3).round
           if Time.now <=  evento.created_at + t.days
@@ -103,4 +106,19 @@ module ApplicationHelper
     end
   
   end
+  
+  def adminOrOwner(usuarioid,evento)
+      user =  Usuario.find(usuarioid)
+    if (evento.usuario_id.eql?Integer(usuarioid)) || (user.admin.eql?true)
+      puts "Usuario criou o evento ou é admin"
+      return true
+    else
+      puts "Usuario NAO criou o evento e NAO é admin"
+      return false
+      
+    end
+    
+  end
+  
+  
 end

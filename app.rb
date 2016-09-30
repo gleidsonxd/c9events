@@ -41,7 +41,7 @@ end
 get     '/eventos/:id' do
     content_type :json
     evento = Evento.find(params[:id])
-    e = evento.to_json + evento.servicos.to_json
+    e = evento.to_json + evento.servicos.to_json + evento.lugars.to_json
      
     return e
     
@@ -123,13 +123,35 @@ post    '/eventos' do
    
     
 end
-put     '/eventos/:id' do
+put     '/eventos/:id' do #add verificação admin 
     #protected!
     content_type :json
     evento = Evento.find(params[:id])
-    if validaservico(evento,params[:evento][:servico_ids])
-        #evento.servicos.destroy
-        
+    if Usuario.find(params[:usuarioid]).admin.eql?false 
+        puts "Update nao admin"
+        if adminOrOwner(params[:usuarioid],evento)
+            if validaservico(evento)
+                #evento.servicos.destroy
+                
+                if evento.update_attributes (params[:evento])
+                    #mailToCoord(create)
+                    status 200
+                    evento.to_json
+                else
+                    status 500
+                    json evento.errors.full_messages
+                end
+            else
+                status 500
+                json evento.errors.full_messages
+            
+            end
+        else
+            status 500
+            json "Usuario NAO criou o evento e NAO é admin"
+        end
+    else
+        puts "Update admin"
         if evento.update_attributes (params[:evento])
             #mailToCoord(create)
             status 200
@@ -138,23 +160,24 @@ put     '/eventos/:id' do
             status 500
             json evento.errors.full_messages
         end
-    else
-        status 500
-        json evento.errors.full_messages
-    
     end
 end
-delete  '/eventos/:id' do
+delete  '/eventos/:id' do # Validar se usuario e o dono ou admin
     content_type :json
     evento = Evento.find(params[:id]) 
-    
-    if evento.destroy
-        status 200
-        json "O evento foi removido"
+    if adminOrOwner(params[:usuarioid],evento)
+        if evento.destroy
+            status 200
+            json "O evento foi removido"
+        else
+            status 500
+            json "Ocorreu um erro ao remover o evento"
+        end
     else
         status 500
-        json "Ocorreu um erro ao remover o evento"
+        json "#Usuario NAO criou o evento e NAO é admin"
     end
+    
 end
 
 #Rotas Servico
