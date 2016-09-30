@@ -40,12 +40,13 @@ param dataIni,     String,          required, no formato dd/MM/yyyy T HH:mm
 param dataFim,     String,          required, no formato dd/MM/yyyy T HH:mm. Fazer validação das datas.
 param desc,        String,                    a descrição do evento
 param usuario_id,     Int,          required, id do usuario que alterou o evento
+param usuarioid,   Int,             required, id do usuario logado  
 
 ```  
 
 ```
 PUT /eventos
-curl -X PUT -d "evento[nome]=Evento_Mod&evento[dataIni]=10/10/2010 09:00&evento[dataFim]=10/10/2010 12:00&evento[desc]=Descricao Tall_mod&evento[usuario_id]=1&evento[servico_ids]=1&evento[lugars_ids]=2" localhost:3000/eventos/2
+curl -X PUT -d "evento[nome]=Evento_Mod&evento[dataIni]=10/10/2010 09:00&evento[dataFim]=10/10/2010 12:00&evento[desc]=Descricao Tall_mod&evento[usuario_id]=1&evento[servico_ids]=1&evento[lugars_ids]=2&usuarioid=1" localhost:3000/eventos/2
 
 
 Retorna o ID do evento alterado:
@@ -59,10 +60,13 @@ HTTP/1.1 200 Ok
 ###Delete
 
 Um usuario pode apagar um evento que ele criou.
+```
+param usuarioid,   Int,             required, id do usuario logado  
+```
 
 ```
 DELETE /eventos
-curl -X DELETE localhost:3000/eventos/2
+curl -X DELETE -d "usuarioid=1" localhost:3000/eventos/2
 
 Retorna a mensagem de sucesso:
 HTTP/1.1 200 Ok
