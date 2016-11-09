@@ -232,11 +232,12 @@ Os usuarios do sistema vão se logar utilizando o email institucional, na primei
 ```
 param nome,        String,      required, nome do usuario
 param email,       String,      required, email do usuario
+param matricula    String,      required, matricula do usuario
 ```
 
 ```
 POST /usuarios
-curl -d "usuario[nome]=Nome_Usuario&usuario[email]=usuario@email.com"localhost:3000/usuarios
+curl -d "usuario[nome]=Nome_Usuario&usuario[email]=usuario@email.com&usuario[matricula]=123"localhost:3000/usuarios
 
 Retorna a mensagem de sucesso:
 HTTP/1.1 200 Ok
@@ -247,16 +248,18 @@ HTTP/1.1 200 Ok
 ---
 ###Update
 
-O usuario vai poder alterar os dados do seu cadastro. Para atualizar um usuario, deve-se enviar alguns parametros:
+O usuario vai poder alterar os dados do seu cadastro, mas apenas o administrador vai poder alterar o email do usuario. Para atualizar um usuario, deve-se enviar alguns parametros:
 
 ```
 param nome,        String,      required, nome do usuario
+param matricula    String,      required, matricula do usuario
+param usuarioid,   Int,         required, ID do usuario logado.
 
 ```
 
 ```
 PUT /usuarios/2
-curl -X PUT -d "usuario[nome]=Nome_Usuario_Mod"localhost:3000/usuarios/2
+curl -X PUT -d "usuario[nome]=Nome_Usuario_Mod&usuario[matricula]=123&usuarioid=2"localhost:3000/usuarios/2
 
 Retorna a mensagem de sucesso:
 HTTP/1.1 200 Ok
@@ -271,8 +274,14 @@ HTTP/1.1 200 Ok
 Um usuario administrador pode apagar um usuario.
 
 ```
+param usuarioid,   Int,         required, ID do usuario logado.
+
+```
+
+```
 DELETE /usuarios
-curl -X DELETE localhost:3000/usuarios/2
+curl -X DELETE -d "usuarioid=3" localhost:3000/usuarios/2
+
 
 Retorna a mensagem de sucesso:
 HTTP/1.1 200 Ok
@@ -284,17 +293,21 @@ HTTP/1.1 200 Ok
 ---
 ###Read
 
-O administrador vai poder ver os dados de um usuário específico. Para ver um usuário, deve-se acessar a URL:
+O administrador vai poder ver os dados de um usuário específico (O usuario comum vai poder ver os próprios dados).  Para ver um usuário, deve-se acessar a URL:
 
+```
+param usuarioid,   Int,         required, ID do usuario logado.
+
+```
 ```
 GET/usuarios/1
 
-curl localhost:3000/usuarios/1
+curl -X GET -d "usuarioid=1" localhost:3000/usuarios/1
 
 Retorna o JSON:
 HTTP/1.1 200 Ok
 [
-  {"usuarios":{"nome":"nome_user","email":"user@email.com"}}    
+  {"usuarios":{"nome":"nome_user","email":"user@email.com","matricula":"123"}}    
 ]
 
 ```
@@ -304,16 +317,20 @@ HTTP/1.1 200 Ok
 O administrador vai poder ver todos os usuários cadastrados. Para ver os usuários, deve-se acessar a URL:
 
 ```
+param usuarioid,   Int,         required, ID do usuario logado.
+
+```
+```
 GET/usuarios
 
-curl localhost:3000/usuarios
+curl -X GET -d "usuarioid=3" localhost:3000/usuarios
 
 Retorna o JSON:
 HTTP/1.1 200 Ok
 [
-  {"usuarios":{"nome":"nome_user","email":"user@email.com"}},
-  {"usuarios":{"nome":"nome_user2","email":"user2@email.com"}},
-  {"usuarios":{"nome":"nome_user3","email":"user3@email.com"}}
+  {"usuarios":{"nome":"nome_user","email":"user@email.com","matricula":"123"}},
+  {"usuarios":{"nome":"nome_user2","email":"user2@email.com","matricula":"1234"}},
+  {"usuarios":{"nome":"nome_user3","email":"user3@email.com","matricula":"1232"}}
 ]
 
 ```
@@ -326,13 +343,13 @@ HTTP/1.1 200 Ok
 
 ```
 param nome,        String,      required, nome do lugar
-param qntPessoas,  Int,         required, quantidade de pessoas
+param quantidade,  Int,         required, quantidade de pessoas
 param usuarioid,        Int,      required, ID do usuario logado.
 ```
 
 ```
 POST /lugars
-curl -d "lugar[nome]=Patio&lugar[qntPessoas]=150&usuarioid"localhost:3000/lugars
+curl -d "lugar[nome]=Patio&lugar[quantidade]=150&usuarioid=4"localhost:3000/lugars
 
 Retorna o ID do lugar criado:
 HTTP/1.1 200 Ok

@@ -9,6 +9,8 @@ require './models/servico'
 require './models/coord'
 #require './models/teste'
 require './lib/sinatra/application_helper'
+require 'net/smtp'
+
 
 
 helpers ApplicationHelper
@@ -41,9 +43,8 @@ end
 get     '/eventos/:id' do
     content_type :json
     evento = Evento.find(params[:id])
-    e = evento.to_json + evento.servicos.to_json + evento.lugars.to_json
-     
-    return e
+    evento.to_json(:include => [:servicos, :lugars,:usuario])
+   
     
 end
 
@@ -123,7 +124,7 @@ post    '/eventos' do
    
     
 end
-put     '/eventos/:id' do #add verificação admin 
+put     '/eventos/:id' do #add verificação admin, nao esta atualizando 
     #protected!
     content_type :json
     evento = Evento.find(params[:id])
@@ -131,12 +132,12 @@ put     '/eventos/:id' do #add verificação admin
         puts "Update nao admin"
         if adminOrOwner(params[:usuarioid],evento)
             if validaservico(evento)
-                #evento.servicos.destroy
+                evento.servicos.destroy
                 
                 if evento.update_attributes (params[:evento])
                     #mailToCoord(create)
                     status 200
-                    evento.to_json
+                    evento.to_json(:include => [:servicos, :lugars,:usuario])
                 else
                     status 500
                     json evento.errors.full_messages
@@ -155,7 +156,7 @@ put     '/eventos/:id' do #add verificação admin
         if evento.update_attributes (params[:evento])
             #mailToCoord(create)
             status 200
-            evento.to_json
+            evento.to_json(:include => [:servicos, :lugars,:usuario])
         else
             status 500
             json evento.errors.full_messages
@@ -196,7 +197,8 @@ get     '/servicos/:id' do
     content_type :json
     if valida_admin(params[:usuarioid])
         servico = Servico.find(params[:id])
-        servico.to_json
+        
+        servico.to_json(:include => :coord)
     else
         status 403
         json "Usuario sem acesso suficiente."
@@ -225,7 +227,7 @@ put     '/servicos/:id' do
         servico = Servico.find(params[:id])   
         if servico.update_attributes (params[:servico])
             status 200
-            servico.to_json
+            servico.to_json(:include => :coord)
         else
             status 500
             json servico.errors.full_messages
@@ -255,15 +257,26 @@ delete  '/servicos/:id' do
 end
 
 #Rotas Usuario#
-get     '/usuarios' do
+get     '/usuarios' do #APENAS ADMIN
     content_type :json
-    usuarios = Usuario.all
-    usuarios.to_json
+    if valida_admin(params[:usuarioid])
+        usuarios = Usuario.all
+        usuarios.to_json
+   else
+        status 403
+        json "Usuario sem acesso suficiente."
+    end 
 end
-get     '/usuarios/:id' do
+get     '/usuarios/:id' do #APENAS ADMIN OU DONO
     content_type :json
-    usuario = Usuario.find(params[:id])
-    usuario.to_json
+    user = Usuario.find(params[:usuarioid])
+    if((user.admin.eql?true) || (Integer(params[:usuarioid]).eql?Integer(params[:id])))
+        usuario = Usuario.find(params[:id])
+        usuario.to_json
+    else
+        status 403
+        json "Usuario sem acesso suficiente."
+    end 
     
 end
 post    '/usuarios' do
@@ -273,33 +286,44 @@ post    '/usuarios' do
         status 201
     else
         status 500
-        json usuario.errors.full_messages#implementar validação
+        json usuario.errors.full_messages
     end
     
 end
 
-put     '/usuarios/:id' do
+put     '/usuarios/:id' do  #APENAS ADMIN OU DONO
     content_type :json
-    usuario = Usuario.find(params[:id])   
-    if usuario.update_attributes (params[:usuario])
-        status 200
-        usuario.to_json
+    user = Usuario.find(params[:usuarioid])
+    if((user.admin.eql?true) || (Integer(params[:usuarioid]).eql?Integer(params[:id])))
+        usuario = Usuario.find(params[:id])   
+        if usuario.update_attributes (params[:usuario])
+            status 200
+            usuario.to_json
+        else
+            status 500
+            json usuario.errors.full_messages
+        end
     else
-        status 500
-        json usuario.errors.full_messages
-    end
+        status 403
+        json "Usuario sem acesso suficiente."
+    end 
 end
 
-delete  '/usuarios/:id' do
+delete  '/usuarios/:id' do #APENAS ADMIN
     content_type :json
-    usuario = Usuario.find(params[:id])
-    if usuario.destroy
-        status 200
-        json "O usuario foi removido"
+    if valida_admin(params[:usuarioid])
+        usuario = Usuario.find(params[:id])
+        if usuario.destroy
+            status 200
+            json "O usuario foi removido"
+        else
+            status 500
+            json "Ocorreu um erro ao remover o usuario"
+        end
     else
-        status 500
-        json "Ocorreu um erro ao remover o usuario"
-    end
+        status 403
+        json "Usuario sem acesso suficiente."
+    end 
 end
 
 
@@ -447,4 +471,20 @@ delete   '/coords/:id' do
         status 403
         json "Usuario sem acesso suficiente."
     end
+end
+
+post     '/login' do
+    # smtp = Net::SMTP.new('mail.ifpb.edu.br', 587)
+    # @teste = true
+    # smtp.start('localhost', 'params[:email]', 'params[:senha]', :plain) do |smtp| 
+    # end
+    # rescue  Net::SMTPAuthenticationError
+    # @teste = false
+    usuario = Usuario.all
+    usuario.each do |u|
+        if((params[:email]) == u.email)
+            return {:user => u.email, :logado => 1, :pri => 0,:adm => u.admin}.to_json
+        end
+    end
+    
 end
