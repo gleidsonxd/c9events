@@ -184,13 +184,13 @@ end
 #Rotas Servico
 get     '/servicos' do
     content_type :json
-    if valida_admin(params[:usuarioid])
+    # if valida_admin(params[:usuarioid])
         servicos = Servico.all
         servicos.to_json
-    else
-        status 403
-        json "Usuario sem acesso suficiente."
-    end 
+    # else
+    #     status 403
+    #     json "Usuario sem acesso suficiente."
+    # end 
 end
 
 get     '/servicos/:id' do
@@ -330,13 +330,13 @@ end
 #Rotas Lugar
 get     '/lugars' do
     content_type :json
-    if valida_admin(params[:usuarioid])
+    # if valida_admin(params[:usuarioid])
         lugares = Lugar.all
         lugares.to_json
-    else
-        status 403
-        json "Usuario sem acesso suficiente."
-    end        
+    # else
+    #     status 403
+    #     json "Usuario sem acesso suficiente."
+    # end        
 end
 
 get     '/lugars/:id' do
@@ -483,7 +483,7 @@ post     '/login' do
     usuario = Usuario.all
     usuario.each do |u|
         if((params[:email]) == u.email)
-            return {:user => u.email, :logado => 1, :pri => 0,:adm => u.admin}.to_json
+            return {:email => u.email, :id => u.id, :logado => 1, :pri => 0,:adm => u.admin}.to_json
         end
     end
     
