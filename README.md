@@ -18,7 +18,7 @@ eventos,           String[],          required, Lista com IDs dos lugares.
   
 ```
 POST /eventos
-curl -d "evento[user_id]=1&evento[nome]=Evento tal&evento[dataIni]=10/10/2010T09:00&evento[dataFim]=10/10/2010T12:00&evento[desc]=Descricao Tall" localhost:3000/eventos
+curl -d "evento[user_id]=1&evento[nome]=Evento tal&evento[dataIni]=10/10/2010T09:00&evento[dataFim]=10/10/2010T12:00&evento[desc]=Descricao Tall" localhost:3000/eventos -u admin:admin
 
 Retorna o ID do evento criado:
 HTTP/1.1 200 Ok
@@ -46,7 +46,7 @@ param usuarioid,   Int,             required, id do usuario logado
 
 ```
 PUT /eventos
-curl -X PUT -d "evento[nome]=Evento_Mod&evento[dataIni]=10/10/2010 09:00&evento[dataFim]=10/10/2010 12:00&evento[desc]=Descricao Tall_mod&evento[usuario_id]=1&evento[servico_ids]=1&evento[lugars_ids]=2&usuarioid=1" localhost:3000/eventos/2
+curl -X PUT -d "evento[nome]=Evento_Mod&evento[dataIni]=10/10/2010 09:00&evento[dataFim]=10/10/2010 12:00&evento[desc]=Descricao Tall_mod&evento[usuario_id]=1&evento[servico_ids]=1&evento[lugars_ids]=2&usuarioid=1" localhost:3000/eventos/2 -u admin:admin
 
 
 Retorna o ID do evento alterado:
@@ -66,7 +66,7 @@ param usuarioid,   Int,             required, id do usuario logado
 
 ```
 DELETE /eventos
-curl -X DELETE -d "usuarioid=1" localhost:3000/eventos/2
+curl -X DELETE -d "usuarioid=1" localhost:3000/eventos/2 -u admin:admin
 
 Retorna a mensagem de sucesso:
 HTTP/1.1 200 Ok
@@ -83,7 +83,7 @@ O usuario vai poder ver os detalhes dos eventos que criou.Para ver um evento, de
 ```
 GET/eventos/2
 
-curl localhost:3000/eventos/2
+curl localhost:3000/eventos/2 -u admin:admin
 
 Retorna o JSON:
 HTTP/1.1 200 Ok
@@ -99,7 +99,7 @@ O usuario vai poder ver todos os eventos cadastrados.Para ver os eventos, deve-s
 ```
 GET/eventos
 
-curl localhost:3000/eventos
+curl localhost:3000/eventos -u admin:admin
 
 Retorna o JSON:
 HTTP/1.1 200 Ok
@@ -131,7 +131,7 @@ param usuarioid,        Int,      required, ID do usuario logado.
 
 ```
 POST /servicos
-curl -d "servico[nome]=Nome_Servico&servico[tempo]=15&servico[coord_id]=1&usuarioid=1"localhost:3000/servicos
+curl -d "servico[nome]=Nome_Servico&servico[tempo]=15&servico[coord_id]=1&usuarioid=1"localhost:3000/servicos -u admin:admin
 
 Retorna o ID do servico criado:
 HTTP/1.1 200 Ok
@@ -154,7 +154,7 @@ param usuarioid,        Int,      required, ID do usuario logado.
 
 ```
 PUT /servicos/2
-curl -X PUT -d "servico[nome]=Nome_Servico_Mod&servico[tempo]=20&usuarioid=1"localhost:3000/servicos/2
+curl -X PUT -d "servico[nome]=Nome_Servico_Mod&servico[tempo]=20&usuarioid=1"localhost:3000/servicos/2 -u admin:admin
 
 
 Retorna o ID do serviço alterado:
@@ -173,7 +173,7 @@ param usuarioid,        Int,      required, ID do usuario logado.
 ```
 ```
 DELETE /servicos
-curl -X DELETE -d "usuarioid=1" localhost:3000/servicos/2
+curl -X DELETE -d "usuarioid=1" localhost:3000/servicos/2 -u admin:admin
 
 Retorna a mensagem de sucesso:
 HTTP/1.1 200 Ok
@@ -192,7 +192,7 @@ param usuarioid,        Int,      required, ID do usuario logado.
 ```
 GET/servicos/1
 
-curl -X GET -d "usuarioid=1" localhost:3000/servicos/1
+curl -X GET -d "usuarioid=1" localhost:3000/servicos/1 -u admin:admin
 
 Retorna o JSON:
 HTTP/1.1 200 Ok
@@ -211,7 +211,7 @@ param usuarioid,        Int,      required, ID do usuario logado.
 ```
 GET/servicos
 
-curl -X GET -d "usuarioid=1" localhost:3000/servicos
+curl -X GET -d "usuarioid=1" localhost:3000/servicos -u admin:admin
 
 Retorna o JSON:
 HTTP/1.1 200 Ok
@@ -237,8 +237,8 @@ param matricula    String,      required, matricula do usuario
 
 ```
 POST /usuarios
-curl -d "usuario[nome]=Nome_Usuario&usuario[email]=usuario@email.com&usuario[matricula]=123"localhost:3000/usuarios
-
+curl -d "usuario[nome]=Nome_Usuario&usuario[email]=usuario@email.com&usuario[matricula]=123"localhost:3000/usuarios -u admin:admin
+ 
 Retorna a mensagem de sucesso:
 HTTP/1.1 200 Ok
 {
@@ -259,7 +259,7 @@ param usuarioid,   Int,         required, ID do usuario logado.
 
 ```
 PUT /usuarios/2
-curl -X PUT -d "usuario[nome]=Nome_Usuario_Mod&usuario[matricula]=123&usuarioid=2"localhost:3000/usuarios/2
+curl -X PUT -d "usuario[nome]=Nome_Usuario_Mod&usuario[matricula]=123&usuarioid=2"localhost:3000/usuarios/2 -u admin:admin
 
 Retorna a mensagem de sucesso:
 HTTP/1.1 200 Ok
@@ -280,7 +280,7 @@ param usuarioid,   Int,         required, ID do usuario logado.
 
 ```
 DELETE /usuarios
-curl -X DELETE -d "usuarioid=3" localhost:3000/usuarios/2
+curl -X DELETE -d "usuarioid=3" localhost:3000/usuarios/2 -u admin:admin
 
 
 Retorna a mensagem de sucesso:
@@ -302,7 +302,7 @@ param usuarioid,   Int,         required, ID do usuario logado.
 ```
 GET/usuarios/1
 
-curl -X GET -d "usuarioid=1" localhost:3000/usuarios/1
+curl -X GET -d "usuarioid=1" localhost:3000/usuarios/1 -u admin:admin
 
 Retorna o JSON:
 HTTP/1.1 200 Ok
@@ -323,7 +323,7 @@ param usuarioid,   Int,         required, ID do usuario logado.
 ```
 GET/usuarios
 
-curl -X GET -d "usuarioid=3" localhost:3000/usuarios
+curl -X GET -d "usuarioid=3" localhost:3000/usuarios -u admin:admin
 
 Retorna o JSON:
 HTTP/1.1 200 Ok
@@ -349,7 +349,7 @@ param usuarioid,        Int,      required, ID do usuario logado.
 
 ```
 POST /lugars
-curl -d "lugar[nome]=Patio&lugar[quantidade]=150&usuarioid=4"localhost:3000/lugars
+curl -d "lugar[nome]=Patio&lugar[quantidade]=150&usuarioid=4"localhost:3000/lugars -u admin:admin
 
 Retorna o ID do lugar criado:
 HTTP/1.1 200 Ok
@@ -373,7 +373,7 @@ param usuarioid,        Int,      required, ID do usuario logado.
 ```
 
 PUT /lugars/1
-curl -X PUT -d "lugar[nome]=Patio&lugar[qntPessoas]=250&usuarioid=1"localhost:3000/lugars/1
+curl -X PUT -d "lugar[nome]=Patio&lugar[qntPessoas]=250&usuarioid=1"localhost:3000/lugars/1 -u admin:admin
 
 Retorna o ID do lugar alterado:
 HTTP/1.1 200 Ok
@@ -391,7 +391,7 @@ param usuarioid,        Int,      required, ID do usuario logado.
 ```
 ```
 DELETE /lugars
-curl -X DELETE -d "usuarioid=1" localhost:3000/lugars/2
+curl -X DELETE -d "usuarioid=1" localhost:3000/lugars/2 -u admin:admin
 
 Retorna a mensagem de sucesso:
 HTTP/1.1 200 Ok
@@ -410,7 +410,7 @@ param usuarioid,        Int,      required, ID do usuario logado.
 ```
 GET/lugars/1
 
-curl -X GET -d "usuarioid=1" localhost:3000/lugars/1
+curl -X GET -d "usuarioid=1" localhost:3000/lugars/1 -u admin:admin
 
 Retorna o JSON:
 HTTP/1.1 200 Ok
@@ -430,7 +430,7 @@ param usuarioid,        Int,      required, ID do usuario logado.
 ```
 GET/lugars
 
-curl -X GET -d "usuarioid=1" localhost:3000/lugars
+curl -X GET -d "usuarioid=1" localhost:3000/lugars -u admin:admin
 
 Retorna o JSON:
 HTTP/1.1 200 Ok
@@ -456,7 +456,7 @@ param usuarioid,        Int,      required, ID do usuario logado.
 
 ```
 POST /coords
-curl -d "coord[nome]=Coordenacao_eventos&coord[email]=coord@email.com&usuarioid=1"localhost:3000/coords
+curl -d "coord[nome]=Coordenacao_eventos&coord[email]=coord@email.com&usuarioid=1"localhost:3000/coords -u admin:admin
 
 Retorna o ID da coordenação criada:
 HTTP/1.1 200 Ok
@@ -479,7 +479,7 @@ param usuarioid,   Int,         required, ID do usuario logado.
 
 ```
 PUT /coords
-curl -X PUT -d "coord[nome]=Coordenacao_eventos&usuarioid=1"localhost:3000/coords/1
+curl -X PUT -d "coord[nome]=Coordenacao_eventos&usuarioid=1"localhost:3000/coords/1 -u admin:admin
 
 Retorna o ID da coordenação alterada:
 HTTP/1.1 200 Ok
@@ -499,7 +499,7 @@ param usuarioid,        Int,      required, ID do usuario logado.
 
 ```
 DELETE /coords
-curl -X DELETE -d "usuarioid=1" localhost:3000/coords/2
+curl -X DELETE -d "usuarioid=1" localhost:3000/coords/2 -u admin:admin
 
 Retorna a mensagem de sucesso:
 HTTP/1.1 200 Ok
@@ -518,7 +518,7 @@ param usuarioid,        Int,      required, ID do usuario logado.
 ```
 GET/coords/1
 
-curl -X GET -d "usuarioid=1" localhost:3000/coords/1
+curl -X GET -d "usuarioid=1" localhost:3000/coords/1 -u admin:admin
 
 Retorna o JSON:
 HTTP/1.1 200 Ok
@@ -540,7 +540,7 @@ param usuarioid,        Int,      required, ID do usuario logado.
 GET/coords
 
 
-curl -X GET -d "usuarioid=1" localhost:3000/coords
+curl -X GET -d "usuarioid=1" localhost:3000/coords -u admin:admin
 
 Retorna o JSON:
 HTTP/1.1 200 Ok
