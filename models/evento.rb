@@ -8,7 +8,8 @@ class Evento <ActiveRecord::Base
    # attr_accessor :servico, :servico_tempo, :servico_id, :servico_ids, :lugar, :lugar_id, :lugar_ids
     #attr_accessor :servicos_attributes, :lugars_attributes
     
-    accepts_nested_attributes_for :lugars, allow_destroy: true 
+   
+   
     
     accepts_nested_attributes_for :servicos, allow_destroy: true 
         

@@ -26,6 +26,37 @@ get '/teste2' do
     "hello"
 end
 
+get '/mail' do
+	
+    settings = {
+		 address: "mail.ifpb.edu.br",
+		 port: 587,
+		 domain: "ifpb.edu.br",
+		 authentication: "plain",
+		 enable_starttls_auto: true,
+		 user_name: "eventos-jp",
+		 password: "eventosifpb2016"
+	  }
+    smtp = Net::SMTP.new(settings[:address], settings[:port])
+    smtp.enable_starttls_auto if smtp.respond_to?(:enable_starttls_auto)
+
+    begin
+      @teste = true
+      smtp.start(settings[:domain], "eventos-jp@ifpb.edu.br", settings[:password],
+      settings[:authentication]) do |smtp| 
+      end
+    rescue Net::SMTPAuthenticationError
+      @teste = false
+    end
+    
+    if @teste
+    	"passou"
+    else
+    	"erro"
+    end
+    	
+end
+
 get '/teste' do
     dest = "gleidsonsou@gmail.com"
     assunto ="LOL hue3"
@@ -35,12 +66,14 @@ end
 
 #Rotas Eventos
 get     '/eventos' do
+    protected!
     content_type :json
     eventos = Evento.all
     eventos.to_json
 end
 
 get     '/eventos/:id' do
+    protected!
     content_type :json
     evento = Evento.find(params[:id])
     evento.to_json(:include => [:servicos, :lugars,:usuario])
@@ -49,6 +82,7 @@ get     '/eventos/:id' do
 end
 
 post    '/eventos' do
+    protected!
     content_type :json
     evento = Evento.new params[:evento]
     
@@ -124,8 +158,8 @@ post    '/eventos' do
    
     
 end
-put     '/eventos/:id' do #add verificação admin, nao esta atualizando 
-    #protected!
+put     '/eventos/:id' do 
+    protected!
     content_type :json
     evento = Evento.find(params[:id])
     if Usuario.find(params[:usuarioid]).admin.eql?false 
@@ -163,7 +197,8 @@ put     '/eventos/:id' do #add verificação admin, nao esta atualizando
         end
     end
 end
-delete  '/eventos/:id' do # Validar se usuario e o dono ou admin
+delete  '/eventos/:id' do 
+    protected!
     content_type :json
     evento = Evento.find(params[:id]) 
     if adminOrOwner(params[:usuarioid],evento)
@@ -183,6 +218,7 @@ end
 
 #Rotas Servico
 get     '/servicos' do
+    protected!
     content_type :json
     # if valida_admin(params[:usuarioid])
         servicos = Servico.all
@@ -194,6 +230,7 @@ get     '/servicos' do
 end
 
 get     '/servicos/:id' do
+    protected!
     content_type :json
     if valida_admin(params[:usuarioid])
         servico = Servico.find(params[:id])
@@ -206,6 +243,7 @@ get     '/servicos/:id' do
 end
 
 post    '/servicos' do
+    protected!
     if valida_admin(params[:usuarioid])
         content_type :json
         servico = Servico.new params[:servico]
@@ -222,6 +260,7 @@ post    '/servicos' do
     end 
 end
 put     '/servicos/:id' do
+    protected!
     content_type :json
     if valida_admin(params[:usuarioid])
         servico = Servico.find(params[:id])   
@@ -239,6 +278,7 @@ put     '/servicos/:id' do
 end
 
 delete  '/servicos/:id' do
+    protected!
     content_type :json
     if valida_admin(params[:usuarioid])
         servico = Servico.find(params[:id])   
@@ -257,7 +297,8 @@ delete  '/servicos/:id' do
 end
 
 #Rotas Usuario#
-get     '/usuarios' do #APENAS ADMIN
+get     '/usuarios' do
+    protected!
     content_type :json
     if valida_admin(params[:usuarioid])
         usuarios = Usuario.all
@@ -267,7 +308,8 @@ get     '/usuarios' do #APENAS ADMIN
         json "Usuario sem acesso suficiente."
     end 
 end
-get     '/usuarios/:id' do #APENAS ADMIN OU DONO
+get     '/usuarios/:id' do 
+    protected!
     content_type :json
     user = Usuario.find(params[:usuarioid])
     if((user.admin.eql?true) || (Integer(params[:usuarioid]).eql?Integer(params[:id])))
@@ -280,6 +322,7 @@ get     '/usuarios/:id' do #APENAS ADMIN OU DONO
     
 end
 post    '/usuarios' do
+    protected!
     content_type :json
     usuario = Usuario.new params[:usuario]
     if usuario.save
@@ -292,6 +335,7 @@ post    '/usuarios' do
 end
 
 put     '/usuarios/:id' do  #APENAS ADMIN OU DONO
+    protected!
     content_type :json
     user = Usuario.find(params[:usuarioid])
     if((user.admin.eql?true) || (Integer(params[:usuarioid]).eql?Integer(params[:id])))
@@ -310,6 +354,7 @@ put     '/usuarios/:id' do  #APENAS ADMIN OU DONO
 end
 
 delete  '/usuarios/:id' do #APENAS ADMIN
+    protected!
     content_type :json
     if valida_admin(params[:usuarioid])
         usuario = Usuario.find(params[:id])
@@ -329,6 +374,7 @@ end
 
 #Rotas Lugar
 get     '/lugars' do
+    protected!
     content_type :json
     # if valida_admin(params[:usuarioid])
         lugares = Lugar.all
@@ -340,6 +386,7 @@ get     '/lugars' do
 end
 
 get     '/lugars/:id' do
+    protected!
     content_type :json
     if valida_admin(params[:usuarioid])
         lugar = Lugar.find(params[:id])
@@ -350,6 +397,7 @@ get     '/lugars/:id' do
     end    
 end
 post    '/lugars' do
+    protected!
     content_type :json
     if valida_admin(params[:usuarioid])
         lugar = Lugar.new params[:lugar]
@@ -365,6 +413,7 @@ post    '/lugars' do
     end
 end
 put     '/lugars/:id' do
+    protected!
     content_type :json
     if valida_admin(params[:usuarioid])
         lugar = Lugar.find(params[:id])   
@@ -382,6 +431,7 @@ put     '/lugars/:id' do
 end
 
 delete  '/lugars/:id' do 
+    protected!
     content_type :json
     if valida_admin(params[:usuarioid])
         lugar = Lugar.find(params[:id])
@@ -400,6 +450,7 @@ end
 
 #Rotas Coordenação
 get      '/coords' do
+    protected!
     content_type :json
     
     if valida_admin(params[:usuarioid])
@@ -413,6 +464,7 @@ get      '/coords' do
 end
 
 get      '/coords/:id' do
+    protected!
     content_type :json
     if valida_admin(params[:usuarioid])
         coord = Coord.find(params[:id])
@@ -424,6 +476,7 @@ get      '/coords/:id' do
 end
 
 post     '/coords' do
+    protected!
     content_type :json
     if valida_admin(params[:usuarioid])
         coord = Coord.new params[:coord]
@@ -440,6 +493,7 @@ post     '/coords' do
 end
 
 put      '/coords/:id' do
+    protected!
     content_type :json
     if valida_admin(params[:usuarioid])
         coord = Coord.find(params[:id])   
@@ -457,6 +511,7 @@ put      '/coords/:id' do
 end
 
 delete   '/coords/:id' do
+    protected!
     content_type :json
     if valida_admin(params[:usuarioid])
         coord = Coord.find(params[:id])
