@@ -529,17 +529,47 @@ delete   '/coords/:id' do
 end
 
 post     '/login' do
-    # smtp = Net::SMTP.new('mail.ifpb.edu.br', 587)
-    # @teste = true
-    # smtp.start('localhost', 'params[:email]', 'params[:senha]', :plain) do |smtp| 
-    # end
-    # rescue  Net::SMTPAuthenticationError
-    # @teste = false
-    usuario = Usuario.all
-    usuario.each do |u|
+    if (params[:email]!="eventos-jp@ifpb.edu.br")
+         usuario = Usuario.all
+         usuario.each do |u|
         if((params[:email]) == u.email)
             return {:email => u.email, :id => u.id, :logado => 1, :pri => 0,:adm => u.admin}.to_json
         end
     end
+    else
+        settings = {
+    		 address: "mail.ifpb.edu.br",
+    		 port: 587,
+    		 domain: "ifpb.edu.br",
+    		 authentication: "plain",
+    		 enable_starttls_auto: true,
+    		 user_name: "eventos-jp",
+    		 password: "eventosifpb2016"
+    	  }
+        smtp = Net::SMTP.new(settings[:address], settings[:port])
+        smtp.enable_starttls_auto if smtp.respond_to?(:enable_starttls_auto)
     
+           
+        begin
+          @teste = true
+          smtp.start(settings[:domain], params[:email], params[:password],
+          settings[:authentication]) do |smtp| 
+          end
+        rescue Net::SMTPAuthenticationError
+          @teste = false
+        end
+        
+        if @teste
+        	"passou"
+        	usuario = Usuario.all
+            usuario.each do |u|
+                if((params[:email]) == u.email)
+                    return {:email => u.email, :id => u.id, :logado => 1, :pri => 0,:adm => u.admin}.to_json
+                end
+            end
+        else
+        	"erro"
+        end
+        
+    end
 end
