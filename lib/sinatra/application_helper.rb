@@ -1,5 +1,8 @@
 require 'sinatra/base'
 require 'gmail'
+require "base64"
+require 'openssl'
+
 
 module ApplicationHelper
   
@@ -120,5 +123,37 @@ module ApplicationHelper
     
   end
   
+  # def pri_pub_key
+  #   chave_privada= OpenSSL::PKey::RSA.new 1024
+  #   arq = File.open "chave.pri","w"
+  #   arq.write chave_privada
+  #   puts chave_privada
+  #   arq.close
+  
+  #   chave_publica=chave_privada.public_key
+  #   arq = File.open "chave.pub","w"
+  #   arq.write chave_publica
+  #   arq.close
+  #   puts chave_publica
+  #   chave_pub = File.read("chave.pub")
+  #   return chave_pub
+  # end
+  
+  
+  def decrypt (pass)
+    
+    #key = "mMlTUwWqQt2ZOm7I4p7hh+YuPjmZcUlJ5rOuVAeVVjk="
+    iv = "1234567812345678";
+    key = "mMlTUwWqQt2ZOm7I4p7hh+YuPjmZcUlJ5rOuVAeVVjk="
+    decipher = OpenSSL::Cipher::AES256.new(:CBC)
+    decipher.decrypt
+    decipher.key = key
+    decipher.iv = iv
+    
+    senha = decipher.update(pass) + decipher.final
+    
+    
+    return senha
+  end
   
 end

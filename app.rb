@@ -10,7 +10,8 @@ require './models/coord'
 #require './models/teste'
 require './lib/sinatra/application_helper'
 require 'net/smtp'
-
+require "openssl"
+require "base64"
 
 
 helpers ApplicationHelper
@@ -21,9 +22,45 @@ get '/' do
 end
 
 get '/teste2' do
-    protected!
+    # protected!
+    # #Gerando chaves em arquivos
+    # #Criando a chave privada
+    # chave_privada= OpenSSL::PKey::RSA.new 1024
+    # arq = File.open "chave.pri","w"
+    # arq.write chave_privada
+    # arq.close
+    # #Criando a chave publica
+    # chave_publica=chave_privada.public_key
+    # arq = File.open "chave.pub","w"
+    # arq.write chave_publica
+    # arq.close
+    # #Lendo chave privada para cifrar a mensagem
+    # #Lendo arquivo
+    # chave_publica = OpenSSL::PKey::RSA.new(chave_publica)
+    # #Cifrando o texto
+    # texto_cifrado=chave_publica.public_encrypt("123")
+    # #texto_cifrado= %Q(MJtk86SkRfmouP4GR/Za9FHsYSeY9dDfUUETFOHVjtMnk+x1qRMgQytPIGdbPYY9YQaDyrFZGNSCOwip7RejVsbnaCr7A3PKb+AsDL4cFBqwOHypaUGVyNuKsnU6sKAI4Xu522VVyt4wjKzvppqCaWvHuuokkG+KbVQ2CShddLo=)
     
-    "hello"
+    # #Gravando texto cifrado
+    # arq = File.open "texto.txt","w"
+    # arq.write Base64.encode64(texto_cifrado)
+    # arq.close
+    # #Imprimindo o texto
+    # puts texto_cifrado
+    # #Lendo texto cifrado
+    # texto_cifrado = File.read "texto.txt"
+    # #Imprimindo o texto
+    # puts "//////////////////"
+    # puts texto_cifrado
+    # chave_privada=OpenSSL::PKey::RSA.new(chave_privada)
+    # puts chave_privada.private_decrypt(Base64.decode64(texto_cifrado))
+   
+end
+
+get '/pubkey' do
+    protected!
+    String pri_pub_key
+    
 end
 
 get '/mail' do
@@ -529,6 +566,9 @@ delete   '/coords/:id' do
 end
 
 post     '/login' do
+    #puts params[:password]
+    senha = decrypt(params[:password])
+    
     if (params[:email]!="eventos-jp@ifpb.edu.br")
          usuario = Usuario.all
          usuario.each do |u|
@@ -552,7 +592,7 @@ post     '/login' do
            
         begin
           @teste = true
-          smtp.start(settings[:domain], params[:email], params[:password],
+          smtp.start(settings[:domain], params[:email], senha,
           settings[:authentication]) do |smtp| 
           end
         rescue Net::SMTPAuthenticationError
