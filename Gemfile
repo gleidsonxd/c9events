@@ -7,7 +7,6 @@ gem 'sinatra-activerecord'
 gem "rake"
 gem "gmail"
 gem 'protected_attributes'
-gem 'rijndael' 
 
 group :development do
     gem "sqlite3"

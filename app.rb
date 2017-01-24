@@ -244,11 +244,11 @@ delete  '/eventos/:id' do
             json "O evento foi removido"
         else
             status 500
-            json "Ocorreu um erro ao remover o evento"
+            json "Error: Ocorreu um erro ao remover o evento"
         end
     else
         status 500
-        json "#Usuario NAO criou o evento e NAO é admin"
+        json "Error: Usuario NAO criou o evento e NAO é admin"
     end
     
 end
