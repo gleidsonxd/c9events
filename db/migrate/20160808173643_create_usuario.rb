@@ -5,6 +5,7 @@ class CreateUsuario < ActiveRecord::Migration
             t.string :email
             t.string :matricula
             t.boolean :admin,default: false
+            t.boolean :tcoord,default: false
            
             t.timestamps
       end

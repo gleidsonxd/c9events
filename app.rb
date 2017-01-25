@@ -106,7 +106,7 @@ get     '/eventos' do
     protected!
     content_type :json
     eventos = Evento.all
-    eventos.to_json
+    eventos.to_json(:include => [:servicos])
 end
 
 get     '/eventos/:id' do
@@ -117,6 +117,8 @@ get     '/eventos/:id' do
    
     
 end
+
+
 
 post    '/eventos' do
     protected!
@@ -493,6 +495,9 @@ get      '/coords' do
     if valida_admin(params[:usuarioid])
         coords = Coord.all
         coords.to_json
+    elsif Usuario.find(params[:usuarioid]).tcoord == true
+        coords = Coord.all
+        coords.to_json
     else
         status 403
         json "Usuario sem acesso suficiente."
@@ -515,7 +520,7 @@ end
 post     '/coords' do
     protected!
     content_type :json
-    if valida_admin(params[:usuarioid])
+    if (valida_admin(params[:usuarioid]))
         coord = Coord.new params[:coord]
         if coord.save
             status 201
@@ -573,7 +578,7 @@ post     '/login' do
          usuario = Usuario.all
          usuario.each do |u|
         if((params[:email]) == u.email)
-            return {:email => u.email, :id => u.id, :logado => 1, :pri => 0,:adm => u.admin}.to_json
+            return {:email => u.email, :id => u.id, :logado => 1, :pri => 0,:adm => u.admin,:tcoord => u.tcoord}.to_json
         end
     end
     else
@@ -604,7 +609,7 @@ post     '/login' do
         	usuario = Usuario.all
             usuario.each do |u|
                 if((params[:email]) == u.email)
-                    return {:email => u.email, :id => u.id, :logado => 1, :pri => 0,:adm => u.admin}.to_json
+                    return {:email => u.email, :id => u.id, :logado => 1, :pri => 0,:adm => u.admin,:tcoord => u.tcoord}.to_json
                 end
             end
         else

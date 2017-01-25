@@ -1,0 +1,25 @@
+== 20160822170256 EventosLugares: reverting ===================================
+-- drop_table(:eventos_lugars)
+   -> 0.0018s
+== 20160822170256 EventosLugares: reverted (0.0019s) ==========================
+
+== 20160815165611 CreateCoords: reverting =====================================
+-- drop_table(:coords)
+   -> 0.0077s
+== 20160815165611 CreateCoords: reverted (0.0078s) ============================
+
+== 20160811172642 CreateServicosEventos: reverting ============================
+-- drop_table(:eventos_servicos)
+   -> 0.0005s
+== 20160811172642 CreateServicosEventos: reverted (0.0005s) ===================
+
+== 20160811172234 CreateServicos: reverting ===================================
+-- drop_table(:servicos)
+   -> 0.0005s
+== 20160811172234 CreateServicos: reverted (0.0005s) ==========================
+
+== 20160811170411 CreateLugares: reverting ====================================
+-- drop_table(:lugars)
+   -> 0.0004s
+== 20160811170411 CreateLugares: reverted (0.0004s) ===========================
+

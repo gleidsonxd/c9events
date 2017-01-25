@@ -19,43 +19,54 @@ ActiveRecord::Schema.define(version: 20160822170256) do
   end
 
   create_table "eventos", force: :cascade do |t|
-    t.string   "nome",       limit: 255
+    t.string   "nome"
     t.text     "descricao"
     t.datetime "data_ini"
     t.datetime "data_fim"
     t.integer  "usuario_id"
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
+
+  add_index "eventos", ["usuario_id"], name: "index_eventos_on_usuario_id"
 
   create_table "eventos_lugars", id: false, force: :cascade do |t|
     t.integer "lugar_id"
     t.integer "evento_id"
   end
 
+  add_index "eventos_lugars", ["evento_id"], name: "index_eventos_lugars_on_evento_id"
+  add_index "eventos_lugars", ["lugar_id"], name: "index_eventos_lugars_on_lugar_id"
+
   create_table "eventos_servicos", id: false, force: :cascade do |t|
     t.integer "servico_id"
     t.integer "evento_id"
   end
 
+  add_index "eventos_servicos", ["evento_id"], name: "index_eventos_servicos_on_evento_id"
+  add_index "eventos_servicos", ["servico_id"], name: "index_eventos_servicos_on_servico_id"
+
   create_table "lugars", force: :cascade do |t|
-    t.string  "nome",       limit: 255
+    t.string  "nome"
     t.integer "quantidade"
   end
 
   create_table "servicos", force: :cascade do |t|
     t.integer "tempo"
-    t.string  "nome",     limit: 255
+    t.string  "nome"
     t.integer "coord_id"
   end
 
+  add_index "servicos", ["coord_id"], name: "index_servicos_on_coord_id"
+
   create_table "usuarios", force: :cascade do |t|
-    t.string   "nome",       limit: 255
-    t.string   "email",      limit: 255
-    t.string   "matricula",  limit: 255
-    t.boolean  "admin",                  default: false
-    t.datetime "created_at",                             null: false
-    t.datetime "updated_at",                             null: false
+    t.string   "nome"
+    t.string   "email"
+    t.string   "matricula"
+    t.boolean  "admin",      default: false
+    t.boolean  "tcoord",     default: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
 end
