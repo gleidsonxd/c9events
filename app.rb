@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'sinatra/activerecord'
 require 'sinatra/json'
+require 'dotenv/load'
 require './config/environments' #database configuration
 require './models/evento'
 require './models/usuario'
@@ -57,9 +58,10 @@ get '/teste2' do
    
 end
 
-get '/pubkey' do
-    protected!
-    String pri_pub_key
+get '/mjoker' do
+    
+    joker
+    
     
 end
 
@@ -583,13 +585,13 @@ post     '/login' do
     end
     else
         settings = {
-    		 address: "mail.ifpb.edu.br",
-    		 port: 587,
-    		 domain: "ifpb.edu.br",
-    		 authentication: "plain",
-    		 enable_starttls_auto: true,
-    		 user_name: "eventos-jp",
-    		 password: "eventosifpb2016"
+    		 address: ENV['EADDRESS'],
+    		 port: ENV['EPORT'],
+    		 domain: ENV['EDOMAIN'],
+    		 authentication: ENV['EAUTHENTICATION'],
+    		 enable_starttls_auto: ENV['ESTARTTLS_AUTO'],
+    		 user_name: ENV['EUSER'],
+    		 password: ENV['EPASS']
     	  }
         smtp = Net::SMTP.new(settings[:address], settings[:port])
         smtp.enable_starttls_auto if smtp.respond_to?(:enable_starttls_auto)
