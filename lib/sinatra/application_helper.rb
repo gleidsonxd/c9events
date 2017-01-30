@@ -1,8 +1,10 @@
 require 'sinatra/base'
 require 'dotenv/load'
-require 'gmail'
 require "base64"
 require 'openssl'
+require 'net/smtp'
+require 'mailfactory'
+
 
 
 module ApplicationHelper
@@ -17,7 +19,7 @@ module ApplicationHelper
 
   def authorized?
     @auth ||=  Rack::Auth::Basic::Request.new(request.env)
-    @auth.provided? and @auth.basic? and @auth.credentials and @auth.credentials == ['admin', 'admin']
+    @auth.provided? and @auth.basic? and @auth.credentials and @auth.credentials == [ENV['APIUSER'], ENV['APIPASS']]
   end
   
   def teste
@@ -28,21 +30,39 @@ module ApplicationHelper
     serv = Servico.find(servico_id)
     puts serv.coord.nome
     
+    args = {
+        to: serv.coord.email,
+        from: ENV['EMAILFULL'],
+
+    }
+    settings = {
+        address: ENV['EADDRESS'],
+        port: ENV['EPORT'],
+        domain: ENV['EDOMAIN'],
+        authentication: ENV['EAUTHENTICATION'],
+        enable_starttls_auto: ENV['ESTARTTLS_AUTO'],
+        user_name: ENV['EUSER'],
+        password: ENV['EPASS']
+    }
+
+    mail = MailFactory.new()
+    mail.to = args[:to]
+    mail.from = args[:from]
+    mail.subject = "Novo Evento"
+    
+    smtp = Net::SMTP.new(settings[:address], settings[:port])
+    smtp.enable_starttls_auto if smtp.respond_to?(:enable_starttls_auto)
+
+    smtp.start(settings[:domain], ENV['EMAILFULL'], settings[:password],
+    settings[:authentication]) do |smtp| 
+    
     if metodo == "create"
-      assunto = "Um Evento foi criado para a Coord "+serv.coord.nome+"."
-      mail(serv.coord.email,assunto)
-    
-    elsif metodo == "update"
-      assunto = "Um Evento que a Coord "+serv.coord.nome+" fazia parte foi atualizado."
-      mail(serv.coord.email,assunto)
-    else
-      assunto = "Um Evento que a Coord "+serv.coord.nome+" fazia parte foi deletado."
-      mail(serv.coord.email,assunto)
+      mail.text = "Um Evento foi criado para a Coordenação "+serv.coord.nome+"."
+      smtp.send_message mail.to_s(), ENV['EMAILFULL'], args[:to]
     end
-    
-   
-      
-    
+    smtp.finish
+    end
+ 
   end
  
   def valida_evento_data (servicos,eventoData)
