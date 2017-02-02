@@ -131,7 +131,7 @@ put     '/eventos/:id' do
                 evento.servicos.destroy
                 
                 if evento.update_attributes (params[:evento])
-                    #mailToCoord(create)
+                    
                     status 200
                     evento.to_json(:include => [:servicos, :lugars,:usuario])
                 else
@@ -150,7 +150,7 @@ put     '/eventos/:id' do
     else
         puts "Update admin"
         if evento.update_attributes (params[:evento])
-            #mailToCoord(create)
+            
             status 200
             evento.to_json(:include => [:servicos, :lugars,:usuario])
         else

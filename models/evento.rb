@@ -9,7 +9,7 @@ class Evento <ActiveRecord::Base
     #attr_accessor :servicos_attributes, :lugars_attributes
     
    
-   
+   validates :nome, :data_ini,:data_fim, presence: { message: "Blank: Can't be blank" }
     
     accepts_nested_attributes_for :servicos, allow_destroy: true 
         
