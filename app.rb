@@ -182,13 +182,10 @@ end
 get     '/servicos' do
     protected!
     content_type :json
-    # if valida_admin(params[:usuarioid])
+    
         servicos = Servico.all
         servicos.to_json
-    # else
-    #     status 403
-    #     json "Usuario sem acesso suficiente."
-    # end 
+    
 end
 
 get     '/servicos/:id' do
@@ -338,7 +335,7 @@ end
 get     '/lugars' do
     protected!
     content_type :json
-    # if valida_admin(params[:usuarioid])
+    #  if valida_admin(params[:usuarioid])
         lugares = Lugar.all
         lugares.to_json
     # else
