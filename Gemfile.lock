@@ -63,6 +63,7 @@ DEPENDENCIES
   dotenv
   mailfactory
   protected_attributes
+  rack-test
   rake
   sinatra
   sinatra-activerecord

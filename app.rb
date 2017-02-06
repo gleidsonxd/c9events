@@ -35,9 +35,13 @@ end
 get     '/eventos/:id' do
     protected!
     content_type :json
+    
+    if eventExist(params[:id])
     evento = Evento.find(params[:id])
     evento.to_json(:include => [:servicos, :lugars,:usuario])
-   
+    else
+        halt 404, "Not found\n"
+    end
     
 end
 
@@ -131,7 +135,7 @@ put     '/eventos/:id' do
                 evento.servicos.destroy
                 
                 if evento.update_attributes (params[:evento])
-                    
+                    #mailToCoord(create)
                     status 200
                     evento.to_json(:include => [:servicos, :lugars,:usuario])
                 else
@@ -150,7 +154,7 @@ put     '/eventos/:id' do
     else
         puts "Update admin"
         if evento.update_attributes (params[:evento])
-            
+            #mailToCoord(create)
             status 200
             evento.to_json(:include => [:servicos, :lugars,:usuario])
         else
@@ -182,7 +186,6 @@ end
 get     '/servicos' do
     protected!
     content_type :json
-    
         servicos = Servico.all
         servicos.to_json
     
@@ -192,9 +195,12 @@ get     '/servicos/:id' do
     protected!
     content_type :json
     if valida_admin(params[:usuarioid])
-        servico = Servico.find(params[:id])
-        
-        servico.to_json(:include => :coord)
+        if servicoExist(params[:id])
+            servico = Servico.find(params[:id])
+            servico.to_json(:include => :coord)
+        else
+            halt 404, "Not found\n"
+        end
     else
         status 403
         json "Usuario sem acesso suficiente."
@@ -270,14 +276,18 @@ end
 get     '/usuarios/:id' do 
     protected!
     content_type :json
-    user = Usuario.find(params[:usuarioid])
-    if((user.admin.eql?true) || (Integer(params[:usuarioid]).eql?Integer(params[:id])))
-        usuario = Usuario.find(params[:id])
-        usuario.to_json
+    if usuarioExist(params[:id])
+        user = Usuario.find(params[:usuarioid])
+        if((user.admin.eql?true) || (Integer(params[:usuarioid]).eql?Integer(params[:id])))
+            usuario = Usuario.find(params[:id])
+            usuario.to_json
+        else
+            status 403
+            json "Usuario sem acesso suficiente."
+        end 
     else
-        status 403
-        json "Usuario sem acesso suficiente."
-    end 
+        halt 404, "Not found\n"
+    end
     
 end
 post    '/usuarios' do
@@ -335,21 +345,22 @@ end
 get     '/lugars' do
     protected!
     content_type :json
-    #  if valida_admin(params[:usuarioid])
+    
         lugares = Lugar.all
         lugares.to_json
-    # else
-    #     status 403
-    #     json "Usuario sem acesso suficiente."
-    # end        
+         
 end
 
 get     '/lugars/:id' do
     protected!
     content_type :json
     if valida_admin(params[:usuarioid])
-        lugar = Lugar.find(params[:id])
-        lugar.to_json
+        if lugarExist(params[:id])
+            lugar = Lugar.find(params[:id])
+            lugar.to_json
+        else
+            halt 404, "Not found\n"
+        end
     else
         status 403
         json "Usuario sem acesso suficiente."
@@ -429,8 +440,12 @@ get      '/coords/:id' do
     protected!
     content_type :json
     if valida_admin(params[:usuarioid])
-        coord = Coord.find(params[:id])
-        coord.to_json
+        if coordExist(params[:id])
+            coord = Coord.find(params[:id])
+            coord.to_json
+        else
+            halt 404, "Not found\n"
+        end
     else
         status 403
         json "Usuario sem acesso suficiente."
@@ -533,7 +548,8 @@ post     '/login' do
                 end
             end
         else
-        	"erro"
+        	 return {:erro =>  "Usuario e senha incorretos!"}.to_json
+
         end
         
     end

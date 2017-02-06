@@ -26,6 +26,61 @@ module ApplicationHelper
     "Hello Mundo"
   end
   
+  def eventExist(id)
+     evento = Evento.all
+     evento.each do |e|
+        if (e.id != Integer(id))
+          return false
+        else
+          return true
+        end
+     end
+  end
+
+  def coordExist(id)
+    coord = Coord.all
+    coord.each do |c|
+      if (c.id != Integer(id))
+          return false
+        else
+          return true
+        end
+    end
+  end
+  
+  def lugarExist(id)
+    lugar = Lugar.all
+    lugar.each do |l|
+      if (l.id != Integer(id))
+          return false
+        else
+          return true
+        end
+    end
+  end
+
+  def usuarioExist(id)
+    usuario = Usuario.all
+    usuario.each do |u|
+      if (u.id != Integer(id))
+          return false
+        else
+          return true
+        end
+    end
+  end
+
+  def servicoExist(id)
+    servico = Servico.all
+    servico.each do |s|
+      if (s.id != Integer(id))
+          return false
+        else
+          return true
+        end
+    end
+  end
+
   def mailToCoord(servico_id,metodo)
     serv = Servico.find(servico_id)
     puts serv.coord.nome
@@ -123,8 +178,11 @@ module ApplicationHelper
   end
   
   def valida_admin(usuarioid)
-    usuario = Usuario.find(usuarioid)
     
+    if (usuarioid == nil)
+      halt 500, "Invalid\n"
+    end
+    usuario = Usuario.find(usuarioid)
     if usuario.admin == true
       return true
     else

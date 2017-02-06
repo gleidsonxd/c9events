@@ -8,6 +8,11 @@ gem "rake"
 gem 'protected_attributes'
 gem 'dotenv'
 gem 'mailfactory'
+gem "rack-test"
 group :development do
+    gem "sqlite3"
+end
+
+group :test do
     gem "sqlite3"
 end
