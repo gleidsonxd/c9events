@@ -373,6 +373,7 @@ post    '/lugars' do
         lugar = Lugar.new params[:lugar]
         if lugar.save
             status 201
+            json "Lugar Criado."
         else
             status 500
             json lugar.errors.full_messages
@@ -459,6 +460,7 @@ post     '/coords' do
         coord = Coord.new params[:coord]
         if coord.save
             status 201
+            json "Coordenacao Criada."
         else
             status 500
             json coord.errors.full_messages
