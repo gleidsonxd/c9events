@@ -14,7 +14,7 @@ require 'net/smtp'
 require "openssl"
 require "base64"
 
-
+set :environment, :development
 helpers ApplicationHelper
 
 
@@ -37,8 +37,8 @@ get     '/eventos/:id' do
     content_type :json
     
     if eventExist(params[:id])
-    evento = Evento.find(params[:id])
-    evento.to_json(:include => [:servicos, :lugars,:usuario])
+        evento = Evento.find(params[:id])
+        evento.to_json(:include => [:servicos, :lugars,:usuario])
     else
         halt 404, "Not found\n"
     end
@@ -72,6 +72,7 @@ post    '/eventos' do
         end
         if evento.save
             status 201
+            json "Evento Criado com Sucesso"
         else
             status 500
             json evento.errors.full_messages#implementar validação
@@ -98,6 +99,7 @@ post    '/eventos' do
                 end
                 if evento.save
                     status 201
+                    json "Evento Criado com Sucesso"
                 else
                     status 500
                     json evento.errors.full_messages#implementar validação
@@ -111,6 +113,7 @@ post    '/eventos' do
             puts "EVENTO INDEPENDENTE"
             if evento.save
                 status 201
+                json "Evento Criado com Sucesso"
             else
                 status 500
                 json evento.errors.full_messages#implementar validação

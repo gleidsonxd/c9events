@@ -27,58 +27,45 @@ module ApplicationHelper
   end
   
   def eventExist(id)
-     evento = Evento.all
-     evento.each do |e|
-        if (e.id != Integer(id))
-          return false
-        else
-          return true
-        end
-     end
+    if (Evento.exists?(Integer(id)) == false)
+      return false
+    else
+      return true
+    end  
   end
 
   def coordExist(id)
-    coord = Coord.all
-    coord.each do |c|
-      if (c.id != Integer(id))
-          return false
-        else
-          return true
-        end
+    if (Coord.exists?(Integer(id)) == false)
+        return false
+    else
+        return true
     end
   end
   
   def lugarExist(id)
-    lugar = Lugar.all
-    lugar.each do |l|
-      if (l.id != Integer(id))
-          return false
-        else
-          return true
-        end
+    if (Lugar.exists?(Integer(id)) == false)
+        return false
+    else
+        return true
     end
   end
 
   def usuarioExist(id)
-    usuario = Usuario.all
-    usuario.each do |u|
-      if (u.id != Integer(id))
-          return false
-        else
-          return true
-        end
+    if (Usuario.exists?(Integer(id)) == false)
+        return false
+    else
+        return true
     end
+    
   end
 
   def servicoExist(id)
-    servico = Servico.all
-    servico.each do |s|
-      if (s.id != Integer(id))
-          return false
-        else
-          return true
-        end
+    if (Servico.exists?(Integer(id)) == false)
+        return false
+    else
+        return true
     end
+    
   end
 
   def mailToCoord(servico_id,metodo)
