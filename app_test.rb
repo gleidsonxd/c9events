@@ -88,7 +88,10 @@ class AppTest < Test::Unit::TestCase
     authorize "admin","admin"
     post '/coords',:usuarioid=>"1"
     assert_equal last_response.body,"[\"Nome Blank: Can't be blank\",\"Email Blank: Can't be blank\"]"
-    
+    #bad6
+    authorize "admin","admin"
+    post '/coords',:usuarioid=>"1",:coord=>{nome:'Coord Test',:email=>"coord3@ifpb.edu.br"}
+    assert_equal last_response.body,"[\"Email Error: Email ja existe!\"]"
   end
 
   ###############LUGARES#######################
@@ -178,11 +181,11 @@ class AppTest < Test::Unit::TestCase
     tmp = Usuario.all.length
     assert_equal "Not authorized\n", last_response.body
     #bad2
-	authorize "admin","admin"
-	get '/usuarios'
-	tmp = Usuario.all.length
-	assert_equal "Invalid\n", last_response.body
-	#bad3
+    authorize "admin","admin"
+    get '/usuarios'
+    tmp = Usuario.all.length
+    assert_equal "Invalid\n", last_response.body
+    #bad3
     authorize "admin","admin"
     get '/usuarios',:usuarioid=>"2"
     assert_equal "\"Usuario sem acesso suficiente.\"", last_response.body
@@ -207,40 +210,41 @@ class AppTest < Test::Unit::TestCase
     assert_equal last_response.body, "Not found\n"
   end
   #POST
-  #POST
   def test_create_usuario
-    # #good
-    # authorize "admin","admin"
-    # post '/lugars',:usuarioid=>"1",:lugar=>{nome:'Lugar Test',:quantidade=>500}
-    # assert_equal last_response.body,"\"Lugar Criado.\""
-    # Lugar.find_by('nome'=>'Lugar Test').destroy
-    # #bad1
-    # authorize "",""
-    # post '/lugars',:usuarioid=>"1",:lugar=>{nome:'Lugar Test',:quantidade=>500}
-    # assert_equal last_response.body,"Not authorized\n"  
-    # #bad2
-    # authorize "admin","admin"
-    # post '/lugars',:lugar=>{nome:'Lugar Test',:quantidade=>500}
-    # assert_equal last_response.body,"Invalid\n"
-    # # #bad3
-    # authorize "admin","admin"
-    # post '/lugars',:usuarioid=>"1",:lugar=>{:quantidade=>500}
-    # assert_equal last_response.body,"[\"Nome can't be blank\"]"
-    # #bad4
-    # authorize "admin","admin"
-    # post '/lugars',:usuarioid=>"1",:lugar=>{nome:'Lugar Test'}
-    # assert_equal last_response.body,"[\"Quantidade is not a number\"]"
-    # #bad5
-    # authorize "admin","admin"
-    # post '/lugars',:usuarioid=>"1",:lugar=>{nome:'Lugar Test',:quantidade=>'vinte'}
-    # assert_equal last_response.body,"[\"Quantidade is not a number\"]"
-    # #bad6
-    # authorize "admin","admin"
-    # post '/lugars',:usuarioid=>"1"
-    # assert_equal last_response.body,"[\"Nome can't be blank\",\"Quantidade is not a number\"]"
+    #good
+    authorize "admin","admin"
+    post '/usuarios',:usuario=>{nome:'Usuario Test',:email=>'usuarioteste@ifpb.edu.br',:matricula=>'123'}
+    assert_equal last_response.body,"\"Usuario Criado.\""
+    Usuario.find_by('nome'=>'Usuario Test').destroy
+    #good1
+    authorize "admin","admin"
+    post '/usuarios',:usuario=>{nome:'Usuario Test',:email=>'usuarioteste@ifpb.edu.br'}
+    assert_equal last_response.body,"\"Usuario Criado.\""
+    Usuario.find_by('nome'=>'Usuario Test').destroy
+    #bad1
+    authorize "",""
+    post '/usuarios',:usuario=>{nome:'Usuario Test',:email=>'usuarioteste@ifpb.edu.br',:matricula=>'123'}
+    assert_equal last_response.body,"Not authorized\n"  
+    #bad2
+    authorize "admin","admin"
+    post '/usuarios',:usuario=>{:email=>'usuarioteste@ifpb.edu.br',:matricula=>'123'}
+    assert_equal last_response.body,"[\"Nome Blank: Can't be blank\"]"
+    # #bad3
+    authorize "admin","admin"
+    post '/usuarios',:usuario=>{nome:'Usuario Test',:matricula=>'123'}
+    assert_equal last_response.body,"[\"Email Blank: Can't be blank\"]"
+    #bad4
+    authorize "admin","admin"
+    post '/usuarios',:usuarioid=>"1"
+    assert_equal last_response.body,"[\"Nome Blank: Can't be blank\",\"Email Blank: Can't be blank\"]"
+    #bad5
+    authorize "admin","admin"
+    post '/usuarios',:usuario=>{nome:'Usuario Test',:email=>'admin@ifpb.edu.br'}
+    assert_equal last_response.body,"[\"Email Error: Email ja existe!\"]"
   end
 
   #################SERVICOS########################
+  #LIST
   def test_all_servicos
    	#good
   	authorize "admin","admin"
@@ -252,9 +256,8 @@ class AppTest < Test::Unit::TestCase
     get '/servicos'
     tmp = Servico.all.length
     assert_equal "Not authorized\n", last_response.body
-    
   end
-
+  #GET
   def test_one_servicos
   	#good
   	authorize "admin","admin"
@@ -278,6 +281,39 @@ class AppTest < Test::Unit::TestCase
     authorize "admin","admin"
     get '/servicos/0',:usuarioid=>"1"
     assert_equal last_response.body, "Not found\n"
+  end
+  #POST
+  def test_create_servicos
+    #good
+    authorize "admin","admin"
+    post '/servicos',:usuarioid=>"1",:servico=>{nome:'Servico Test',:tempo=>50,:coord_id=>3}
+    assert_equal last_response.body,"\"Servico Criado.\""
+    Servico.find_by('nome'=>'Servico Test').destroy
+    #bad1
+    authorize "",""
+    post '/servicos',:usuarioid=>"1",:servico=>{nome:'Servico Test',:tempo=>50,:coord_id=>3}
+    assert_equal last_response.body,"Not authorized\n"  
+    #bad2
+    authorize "admin","admin"
+    post '/servicos',:servico=>{nome:'Servico Test',:tempo=>50,:coord_id=>3}
+    assert_equal last_response.body,"Invalid\n"
+    #bad3
+    authorize "admin","admin"
+    post '/servicos',:usuarioid=>"1",:servico=>{:tempo=>50,:coord_id=>3}
+    assert_equal last_response.body,"[\"Nome can't be blank\"]"
+    #bad4
+    authorize "admin","admin"
+    post '/servicos',:usuarioid=>"1",:servico=>{nome:'Servico Test',:coord_id=>3}
+    assert_equal last_response.body,"[\"Tempo is not a number\"]"
+    #bad5
+    authorize "admin","admin"
+    post '/servicos',:usuarioid=>"1",:servico=>{nome:'Servico Test',:tempo=>"vinte",:coord_id=>3}
+    assert_equal last_response.body,"[\"Tempo is not a number\"]"
+    #bad6
+    authorize "admin","admin"
+    post '/servicos',:usuarioid=>"1"
+    assert_equal last_response.body,"[\"Tempo is not a number\",\"Nome can't be blank\"]"
+    
   end
   #############EVENTOS###############
   def test_all_events

@@ -214,6 +214,7 @@ post    '/servicos' do
         servico = Servico.new params[:servico]
         if servico.save
             status 201
+            json "Servico Criado."
         else
             status 500
             json servico.errors.full_messages#implementar validação
@@ -296,6 +297,7 @@ post    '/usuarios' do
     usuario = Usuario.new params[:usuario]
     if usuario.save
         status 201
+        json "Usuario Criado."
     else
         status 500
         json usuario.errors.full_messages

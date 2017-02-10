@@ -5,6 +5,6 @@ class Servico <ActiveRecord::Base
     
     
     validates :tempo, numericality: {only_integer: true}
-    validates :nome, presence: true
+    validates :nome,presence: true
     
 end
