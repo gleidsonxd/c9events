@@ -13,7 +13,7 @@ param dataFim,     DateTime,          required, no formato dd/MM/yyyy T HH:mm. F
 param desc,        String,                    a descrição do sistema
 param usuario_id,  Int,               required,        id do usuario que está solicitando a criação do evento
 servicos,          String[],          required, Lista com IDs dos serviços.    
-eventos,           String[],          required, Lista com IDs dos lugares.
+lugares,           String[],          required, Lista com IDs dos lugares.
 ```  
   
 ```

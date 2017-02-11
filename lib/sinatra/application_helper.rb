@@ -70,7 +70,7 @@ module ApplicationHelper
 
   def mailToCoord(servico_id,metodo)
     serv = Servico.find(servico_id)
-    puts serv.coord.nome
+    #puts serv.coord.nome
     
     args = {
         to: serv.coord.email,
@@ -111,7 +111,7 @@ module ApplicationHelper
     evento =  Evento.all
     evento.each do |e|
       if ((eventoData >= e.data_ini) && (eventoData <= e.data_fim))
-        puts "Ja existe um evento nessa data"
+       # puts "Ja existe um evento nessa data"
         return false
       end
     end
@@ -119,18 +119,21 @@ module ApplicationHelper
     
     time= Time.now
     servicos.each do |s|
-      serv = Servico.find(s)
-      puts time + serv.tempo.days
-      puts eventoData
-      if time + (serv.tempo.days) <= eventoData
-          puts "EVENTO OK"
-          
-      else
-          puts "POUCO TEMPO"
-          return false
-          
-      end
+      if servicoExist(s)
+        serv = Servico.find(s)
+        #puts time + serv.tempo.days
+        #puts eventoData
+        if time + (serv.tempo.days) <= eventoData
+           # puts "EVENTO OK" 
+        else
+           # puts "POUCO TEMPO"
+            return false 
+        end
       
+    else
+        halt 404, "Serviço Not found\n"
+      end
+
     end
   end
   
@@ -154,10 +157,10 @@ module ApplicationHelper
         evento.servicos.each do |s|
           t = (s.tempo*0.3).round
           if Time.now <=  evento.created_at + t.days
-            puts "Pode alterar"
+           # puts "Pode alterar"
             return true
           else
-            puts "Não pode alterar"
+           # puts "Não pode alterar"
             return false
           end
           
@@ -166,7 +169,7 @@ module ApplicationHelper
   
   def valida_admin(usuarioid)
     
-    if (usuarioid == nil)
+    if ((usuarioid == nil)|| usuarioExist(usuarioid)==false)
       halt 500, "Invalid\n"
     end
     usuario = Usuario.find(usuarioid)
@@ -181,10 +184,10 @@ module ApplicationHelper
   def adminOrOwner(usuarioid,evento)
       user =  Usuario.find(usuarioid)
     if (evento.usuario_id.eql?Integer(usuarioid)) || (user.admin.eql?true)
-      puts "Usuario criou o evento ou é admin"
+     # puts "Usuario criou o evento ou é admin"
       return true
     else
-      puts "Usuario NAO criou o evento e NAO é admin"
+     # puts "Usuario NAO criou o evento e NAO é admin"
       return false
       
     end

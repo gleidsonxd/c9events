@@ -14,7 +14,7 @@ require 'net/smtp'
 require "openssl"
 require "base64"
 
-set :environment, :development
+#set :environment, :development
 helpers ApplicationHelper
 
 
@@ -51,24 +51,31 @@ post    '/eventos' do
     protected!
     content_type :json
     evento = Evento.new params[:evento]
-    
     if(evento.usuario.admin == true) #verificação do admin
         if params[:lugares] != ''
             lugares = params[:lugares].split(',')
             lugares.each do |l|
-                evento.lugars << Lugar.find(l)
+                if lugarExist(Integer(l))
+                    evento.lugars << Lugar.find(l)
+                else
+                    halt 404, "Lugar Not found\n"
+                end
             end
         else
-            puts "lista de Lugares vazia"
+            #puts "lista de Lugares vazia"
         end
         if params[:servicos] != ''
             servicos = params[:servicos].split(',')
             servicos.each do |s|
-                mailToCoord(s,"create")
-                evento.servicos << Servico.find(s) 
+                if servicoExist(Integer(s))
+                    mailToCoord(s,"create")
+                    evento.servicos << Servico.find(s) 
+                else
+                     halt 404, "Serviço Not found\n"
+                end
             end
         else
-            puts "lista de Serviço vazia"
+           # puts "lista de Serviço vazia"
         end
         if evento.save
             status 201
@@ -79,15 +86,19 @@ post    '/eventos' do
         end 
         
     else #Fim da verificação do admin
-    puts"Usuario não é admin"
+    #puts"Usuario não é admin"
         if params[:lugares] != ''
             lugares = params[:lugares].split(',')
             lugares.each do |l|
-                evento.lugars << Lugar.find(l)
+                if lugarExist(Integer(l))
+                    evento.lugars << Lugar.find(l)
+                else
+                    halt 404, "Lugar Not found\n"
+                end
             end
             
         else
-            puts "lista de Lugares vazia"
+            #puts "lista de Lugares vazia"
         end
         
         if params[:servicos] != ''
@@ -110,7 +121,7 @@ post    '/eventos' do
             end
         
         else
-            puts "EVENTO INDEPENDENTE"
+            #puts "EVENTO INDEPENDENTE"
             if evento.save
                 status 201
                 json "Evento Criado com Sucesso"
@@ -132,7 +143,7 @@ put     '/eventos/:id' do
     content_type :json
     evento = Evento.find(params[:id])
     if Usuario.find(params[:usuarioid]).admin.eql?false 
-        puts "Update nao admin"
+       # puts "Update nao admin"
         if adminOrOwner(params[:usuarioid],evento)
             if validaservico(evento)
                 evento.servicos.destroy
@@ -155,7 +166,7 @@ put     '/eventos/:id' do
             json "Usuario NAO criou o evento e NAO é admin"
         end
     else
-        puts "Update admin"
+       # puts "Update admin"
         if evento.update_attributes (params[:evento])
             #mailToCoord(create)
             status 200
@@ -311,20 +322,28 @@ end
 put     '/usuarios/:id' do  #APENAS ADMIN OU DONO
     protected!
     content_type :json
-    user = Usuario.find(params[:usuarioid])
-    if((user.admin.eql?true) || (Integer(params[:usuarioid]).eql?Integer(params[:id])))
-        usuario = Usuario.find(params[:id])   
-        if usuario.update_attributes (params[:usuario])
-            status 200
-            usuario.to_json
+    if params[:usuarioid] == nil
+        halt 404, "Invalid\n"
+    end
+    if usuarioExist(params[:usuarioid]) != false
+        user = Usuario.find(params[:usuarioid])
+        if((user.admin.eql?true) || (Integer(params[:usuarioid]).eql?Integer(params[:id])))
+            usuario = Usuario.find(params[:id])   
+            if usuario.update_attributes (params[:usuario])
+                status 200
+                usuario.to_json
+            else
+                status 500
+                json usuario.errors.full_messages
+            end
         else
-            status 500
-            json usuario.errors.full_messages
-        end
+            status 403
+            json "Usuario sem acesso suficiente."
+        end 
+
     else
-        status 403
-        json "Usuario sem acesso suficiente."
-    end 
+        halt 404, "Not found\n"
+    end
 end
 
 delete  '/usuarios/:id' do #APENAS ADMIN

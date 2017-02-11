@@ -35,6 +35,10 @@ class AppTest < Test::Unit::TestCase
     authorize "admin","admin"
     get '/coords/1',:usuarioid=>"2"
     assert_equal "\"Usuario sem acesso suficiente.\"", last_response.body
+    #bad4
+    authorize "admin","admin"
+    get '/coords/1',:usuarioid=>"0"
+    assert_equal "Invalid\n", last_response.body
   end
   #LIST
   def test_one_coords
@@ -60,9 +64,13 @@ class AppTest < Test::Unit::TestCase
     authorize "admin","admin"
     get '/coords/0',:usuarioid=>"1"
     assert_equal last_response.body, "Not found\n"
+    #bad2
+    authorize "admin","admin"
+    get '/coords/1',:usuarioid=>"0"
+    assert_equal "Invalid\n", last_response.body
   end
   #POST
-  def test_create_coord
+  def test_create_coords
     #good
     authorize "admin","admin"
     post '/coords',:usuarioid=>"1",:coord=>{nome:'Coord Test',:email=>"ct@ifpb.edu.br"}
@@ -92,6 +100,53 @@ class AppTest < Test::Unit::TestCase
     authorize "admin","admin"
     post '/coords',:usuarioid=>"1",:coord=>{nome:'Coord Test',:email=>"coord3@ifpb.edu.br"}
     assert_equal last_response.body,"[\"Email Error: Email ja existe!\"]"
+    #bad7
+    authorize "admin","admin"
+    post '/coords',:usuarioid=>"0",:coord=>{nome:'Coord Test',:email=>"ct@ifpb.edu.br"}
+    assert_equal last_response.body,"Invalid\n"
+  end
+  #PUT
+  def test_update_coords
+    #good
+    authorize "admin","admin"
+    put'/coords/2', :usuarioid=>"1",:coord=>{nome:'Coord 2 Test'}
+    c = Coord.find_by('nome'=>'Coord 2 Test')
+    r = JSON.parse(last_response.body)
+    assert_equal c['nome'], r['nome']
+    Coord.update(2,nome:'C2')
+    #bad1
+    authorize "",""
+    put'/coords/2', :usuarioid=>"1",:coord=>{nome:'Coord 2 Test'}
+    assert_equal last_response.body,"Not authorized\n"  
+    #bad2
+    authorize "admin","admin"
+    put'/coords/2', :coord=>{nome:'Coord 2 Test'}
+    assert_equal last_response.body,"Invalid\n"
+    #bad3
+    authorize "admin","admin"
+    put'/coords/2', :usuarioid=>"2",:coord=>{nome:'Coord 2 Test'}
+    assert_equal last_response.body,"\"Usuario sem acesso suficiente.\""
+    #bad4
+    authorize "admin","admin"
+    put'/coords/2', :usuarioid=>"1",:coord=>{email:'coord3@ifpb.edu.br'}
+    assert_equal last_response.body,"[\"Email Error: Email ja existe!\"]"
+    #bad5
+    authorize "admin","admin"
+    put'/coords/2', :usuarioid=>"1",:coord=>{nome:''}
+    assert_equal last_response.body,"[\"Nome Blank: Can't be blank\"]"
+    #bad6
+    authorize "admin","admin"
+    put'/coords/2', :usuarioid=>"1",:coord=>{email:''}
+    assert_equal last_response.body,"[\"Email Blank: Can't be blank\"]"
+    #bad7
+    authorize "admin","admin"
+    put'/coords/2', :usuarioid=>"1",:coord=>{nome:'',email:''}
+    assert_equal last_response.body,"[\"Nome Blank: Can't be blank\",\"Email Blank: Can't be blank\"]"
+    #bad8
+    authorize "admin","admin"
+    put'/coords/2',:usuarioid=>"0", :coord=>{nome:'Coord 2 Test'}
+    assert_equal last_response.body,"Invalid\n"
+
   end
 
   ###############LUGARES#######################
@@ -133,9 +188,13 @@ class AppTest < Test::Unit::TestCase
     authorize "admin","admin"
     get '/lugars/0',:usuarioid=>"1"
     assert_equal last_response.body, "Not found\n"
+    #bad5
+    authorize "admin","admin"
+    get '/lugars/1', :usuarioid=>"0"
+    assert_equal "Invalid\n", last_response.body
   end
   #POST
-  def test_create_lugar
+  def test_create_lugars
     #good
     authorize "admin","admin"
     post '/lugars',:usuarioid=>"1",:lugar=>{nome:'Lugar Test',:quantidade=>500}
@@ -165,6 +224,63 @@ class AppTest < Test::Unit::TestCase
     authorize "admin","admin"
     post '/lugars',:usuarioid=>"1"
     assert_equal last_response.body,"[\"Nome can't be blank\",\"Quantidade is not a number\"]"
+    #bad7
+    authorize "admin","admin"
+    post '/lugars',:usuarioid=>"0",:lugar=>{nome:'Lugar Test',:quantidade=>500}
+    assert_equal last_response.body,"Invalid\n"
+    #bad8
+    authorize "admin","admin"
+    post '/lugars',:usuarioid=>"2",:lugar=>{nome:'Lugar Test',:quantidade=>'vinte'}
+    assert_equal last_response.body,"\"Usuario sem acesso suficiente.\""
+end
+  #PUT
+  def test_update_lugars
+    #good1
+    authorize "admin","admin"
+    put'/lugars/3', :usuarioid=>"1",:lugar=>{nome:'Lugar 3 Test', quantidade:350}
+    l = Lugar.find_by('nome'=>'Lugar 3 Test')
+    r = JSON.parse(last_response.body)
+    assert_equal l['nome'], r['nome']
+    Lugar.update(3,nome:'L3',quantidade:300)
+    #good2
+    authorize "admin","admin"
+    put'/lugars/3', :usuarioid=>"1",:lugar=>{nome:'Lugar 3 Test'}
+    l = Lugar.find_by('nome'=>'Lugar 3 Test')
+    r = JSON.parse(last_response.body)
+    assert_equal l['nome'], r['nome']
+    Lugar.update(3,nome:'L3')
+    #bad1
+    authorize "",""
+    put'/lugars/3', :usuarioid=>"1",:lugar=>{nome:'Lugar 3 Test'}
+    assert_equal last_response.body,"Not authorized\n"  
+    #bad2
+    authorize "admin","admin"
+    put'/lugars/3', :lugar=>{nome:'Lugar 3 Test'}
+    assert_equal last_response.body,"Invalid\n"
+    #bad2
+    authorize "admin","admin"
+    put'/lugars/3',:usuarioid=>"0",:lugar=>{nome:'Lugar 3 Test'}
+    assert_equal last_response.body,"Invalid\n"
+    #bad3
+    authorize "admin","admin"
+    put '/lugars/3',:usuarioid=>"1",:lugar=>{quantidade:'vinte'}
+    assert_equal last_response.body,"[\"Quantidade is not a number\"]"
+    #bad4
+    authorize "admin","admin"
+    put '/lugars/3',:usuarioid=>"1",:lugar=>{nome:''}
+    assert_equal last_response.body,"[\"Nome can't be blank\"]"
+    #bad5
+    authorize "admin","admin"
+    put '/lugars/3',:usuarioid=>"2",:lugar=>{nome:'Lugar Test'}
+    assert_equal last_response.body,"\"Usuario sem acesso suficiente.\""
+    #bad6
+    authorize "admin","admin"
+    put '/lugars/3',:usuarioid=>"1", :lugar=>{nome:'',quantidade:''}
+    assert_equal last_response.body,"[\"Nome can't be blank\",\"Quantidade is not a number\"]"
+    #bad7
+    authorize "admin","admin"
+    put '/lugars',:usuarioid=>"2",:lugar=>{nome:'Lugar Test'}
+    assert_equal last_response.body,"<h1>Not Found</h1>"
   end
 
   ###############USUARIOS#######################
@@ -189,6 +305,11 @@ class AppTest < Test::Unit::TestCase
     authorize "admin","admin"
     get '/usuarios',:usuarioid=>"2"
     assert_equal "\"Usuario sem acesso suficiente.\"", last_response.body
+    #bad4
+    authorize "admin","admin"
+    get '/usuarios',:usuarioid=>"0"
+    tmp = Usuario.all.length
+    assert_equal "Invalid\n", last_response.body
   end
   #GET
   def test_one_usuarios
@@ -208,9 +329,13 @@ class AppTest < Test::Unit::TestCase
     authorize "admin","admin"
     get '/usuarios/0',:usuarioid=>"1"
     assert_equal last_response.body, "Not found\n"
+    #bad3
+    authorize "admin","admin"
+    get '/usuarios/0',:usuarioid=>"0"
+    assert_equal last_response.body, "Not found\n"
   end
   #POST
-  def test_create_usuario
+  def test_create_usuarios
     #good
     authorize "admin","admin"
     post '/usuarios',:usuario=>{nome:'Usuario Test',:email=>'usuarioteste@ifpb.edu.br',:matricula=>'123'}
@@ -221,6 +346,10 @@ class AppTest < Test::Unit::TestCase
     post '/usuarios',:usuario=>{nome:'Usuario Test',:email=>'usuarioteste@ifpb.edu.br'}
     assert_equal last_response.body,"\"Usuario Criado.\""
     Usuario.find_by('nome'=>'Usuario Test').destroy
+    #good2
+    post '/usuarios',:usuario=>{nome:'Usuario Coord Test',:email=>'coordtest@ifpb.edu.br',:tcoord=>true}
+    assert_equal last_response.body,"\"Usuario Criado.\""
+    Usuario.find_by('nome'=>'Usuario Coord Test').destroy
     #bad1
     authorize "",""
     post '/usuarios',:usuario=>{nome:'Usuario Test',:email=>'usuarioteste@ifpb.edu.br',:matricula=>'123'}
@@ -242,7 +371,48 @@ class AppTest < Test::Unit::TestCase
     post '/usuarios',:usuario=>{nome:'Usuario Test',:email=>'admin@ifpb.edu.br'}
     assert_equal last_response.body,"[\"Email Error: Email ja existe!\"]"
   end
-
+  #PUT
+  def test_update_usuarios
+    #good1
+    authorize "admin","admin"
+    put'/usuarios/2', :usuarioid=>"1",:usuario=>{nome:'Usuario 2 Test'}
+    u = Usuario.find_by('nome'=>'Usuario 2 Test')
+    r = JSON.parse(last_response.body)
+    assert_equal u['nome'], r['nome']
+    Usuario.update(2,nome:'noadmin')
+    #bad1
+    authorize "",""
+    put'/usuarios/2', :usuarioid=>"1",:usuario=>{nome:'Usuario 2 Test'}
+    assert_equal last_response.body,"Not authorized\n"  
+    #bad2
+    authorize "admin","admin"
+    put'/usuarios/2',:usuario=>{nome:'Usuario 2 Test'}
+    assert_equal last_response.body,"Invalid\n"
+    #bad3
+    authorize "admin","admin"
+    put'/usuarios/2',:usuario=>{nome:'Usuario 2 Test'}
+    assert_equal last_response.body,"Invalid\n"
+    #bad4
+    authorize "admin","admin"
+    put'/usuarios/2', :usuarioid=>"1",:usuario=>{nome:''}
+    assert_equal last_response.body,"[\"Nome Blank: Can't be blank\"]"
+    #bad4
+    authorize "admin","admin"
+    put'/usuarios/2', :usuarioid=>"1",:usuario=>{email:''}
+    assert_equal last_response.body,"[\"Email Blank: Can't be blank\"]"
+    #bad5
+    authorize "admin","admin"
+    put'/usuarios/2', :usuarioid=>"1",:usuario=>{email:'admin@ifpb.edu.br'}
+    assert_equal last_response.body,"[\"Email Error: Email ja existe!\"]"
+    #bad6
+    authorize "admin","admin"
+    put'/usuarios/2', :usuarioid=>"0",:usuario=>{email:'admin@ifpb.edu.br'}
+    assert_equal last_response.body,"Not found\n"
+    #bad7
+    put'/usuarios/2', :usuarioid=>"5",:usuario=>{email:'admin@ifpb.edu.br'}
+    assert_equal last_response.body,"\"Usuario sem acesso suficiente.\""
+    
+  end
   #################SERVICOS########################
   #LIST
   def test_all_servicos
@@ -281,6 +451,10 @@ class AppTest < Test::Unit::TestCase
     authorize "admin","admin"
     get '/servicos/0',:usuarioid=>"1"
     assert_equal last_response.body, "Not found\n"
+    #bad2
+    authorize "admin","admin"
+    get '/servicos/1',:usuarioid=>"0"
+    assert_equal "Invalid\n", last_response.body
   end
   #POST
   def test_create_servicos
@@ -313,9 +487,13 @@ class AppTest < Test::Unit::TestCase
     authorize "admin","admin"
     post '/servicos',:usuarioid=>"1"
     assert_equal last_response.body,"[\"Tempo is not a number\",\"Nome can't be blank\"]"
-    
+    #bad7
+    authorize "admin","admin"
+    post '/servicos',:usuarioid=>"0",:servico=>{nome:'Servico Test',:tempo=>50,:coord_id=>3}
+    assert_equal last_response.body,"Invalid\n"
   end
   #############EVENTOS###############
+  #LIST
   def test_all_events
   	#good
   	authorize "admin","admin"
@@ -328,7 +506,7 @@ class AppTest < Test::Unit::TestCase
     tmp = Evento.all.length
     assert_equal "Not authorized\n", last_response.body
   end
-
+  #GET
   def test_one_events
   	#good
   	authorize "admin","admin"
@@ -338,4 +516,87 @@ class AppTest < Test::Unit::TestCase
     get '/eventos/0'
     assert_equal last_response.body, "Not found\n"
    end
+  #POST
+  def test_create_events
+    #good1 Craindo como usuario normal
+    # authorize "admin","admin"
+    # post '/eventos',:servicos=>"1,2",:lugares=>"1,2",:evento=>{nome:'Evento Test',:data_ini=>'2017/02/17T11:00',:data_fim=>'2017/02/17T12:00',:usuario_id=>2}
+    # assert_equal last_response.body,"\"Evento Criado com Sucesso\""
+    # Evento.find_by('nome'=>'Evento Test').destroy
+    #good2
+    authorize "admin","admin"
+    post '/eventos',:servicos=>"",:lugares=>"",:evento=>{nome:'Evento Test Ind',:data_ini=>'2017/02/16T11:00',:data_fim=>'2017/02/16T12:00',:usuario_id=>2}
+    assert_equal last_response.body,"\"Evento Criado com Sucesso\""
+    Evento.find_by('nome'=>'Evento Test Ind').destroy
+    #good3 Criando como Adm
+    authorize "admin","admin"
+    post '/eventos',:servicos=>"",:lugares=>"1",:evento=>{nome:'Evento Test Admin',:data_ini=>'2017/01/16T11:00',:data_fim=>'2017/01/16T12:00',:usuario_id=>1}
+    assert_equal last_response.body,"\"Evento Criado com Sucesso\""
+    Evento.find_by('nome'=>'Evento Test Admin').destroy
+    #bad1
+    authorize "",""
+    post '/eventos',:servicos=>"",:lugares=>"",:evento=>{nome:'Evento Test',:data_ini=>'2017/02/16T11:00',:data_fim=>'2017/02/16T12:00',:usuario_id=>2}
+    assert_equal last_response.body,"Not authorized\n"  
+    #bad2
+    authorize "admin","admin"
+    post '/servicos',:servico=>{nome:'Servico Test',:tempo=>50,:coord_id=>3}
+    assert_equal last_response.body,"Invalid\n"
+    #bad3
+    authorize "admin","admin"
+    post '/eventos',:servicos=>"",:lugares=>"",:evento=>{:data_ini=>'2017/02/16T11:00',:data_fim=>'2017/02/16T12:00',:usuario_id=>2}
+    assert_equal last_response.body,"[\"Nome Blank: Can't be blank\"]"
+    #bad4
+    authorize "admin","admin"
+    post '/eventos',:servicos=>"",:lugares=>"",:evento=>{nome:'Evento Test',:data_fim=>'2017/02/16T12:00',:usuario_id=>2}
+    assert_equal last_response.body,"[\"Data ini Blank: Can't be blank\"]"
+    #bad5
+    authorize "admin","admin"
+    post '/eventos',:servicos=>"",:lugares=>"",:evento=>{nome:'Evento Test',:data_ini=>'2017/02/16T12:00',:usuario_id=>2}
+    assert_equal last_response.body,"[\"Data fim Blank: Can't be blank\"]"
+    #bad6 Com Admin
+    authorize "admin","admin"
+    post '/eventos',:servicos=>"0",:lugares=>"1,2",:evento=>{nome:'Evento Test',:data_ini=>'2017/02/17T11:00',:data_fim=>'2017/02/17T12:00',:usuario_id=>1}
+    assert_equal last_response.body,"Serviço Not found\n"
+    #bad7 Com Admin
+    authorize "admin","admin"
+    post '/eventos',:servicos=>"1",:lugares=>"0",:evento=>{nome:'Evento Test',:data_ini=>'2017/02/17T11:00',:data_fim=>'2017/02/17T12:00',:usuario_id=>1}
+    assert_equal last_response.body,"Lugar Not found\n"
+    #bad8 Com Admin
+    authorize "admin","admin"
+    post '/eventos',:servicos=>"0",:lugares=>"0",:evento=>{nome:'Evento Test',:data_ini=>'2017/02/17T11:00',:data_fim=>'2017/02/17T12:00',:usuario_id=>1}
+    assert_equal last_response.body,"Lugar Not found\n"
+    #bad9 Sem Admin
+    authorize "admin","admin"
+    post '/eventos',:servicos=>"0",:lugares=>"1,2",:evento=>{nome:'Evento Test',:data_ini=>'2017/02/18T11:00',:data_fim=>'2017/02/18T12:00',:usuario_id=>2}
+    assert_equal last_response.body,"Serviço Not found\n"
+    #bad10 Sem Admin
+    authorize "admin","admin"
+    post '/eventos',:servicos=>"1",:lugares=>"0",:evento=>{nome:'Evento Test',:data_ini=>'2017/02/17T11:00',:data_fim=>'2017/02/17T12:00',:usuario_id=>2}
+    assert_equal last_response.body,"Lugar Not found\n"
+    #bad11 Sem Admin
+    authorize "admin","admin"
+    post '/eventos',:servicos=>"0",:lugares=>"0",:evento=>{nome:'Evento Test',:data_ini=>'2017/02/17T11:00',:data_fim=>'2017/02/17T12:00',:usuario_id=>2}
+    assert_equal last_response.body,"Lugar Not found\n"
+    #bad12
+    authorize "admin","admin"
+    post '/eventos',:servicos=>"3",:lugares=>"1,2",:evento=>{nome:'Evento Test',:data_ini=>'2017/02/10T11:00',:data_fim=>'2017/02/10T12:00',:usuario_id=>2}
+    assert_equal last_response.body,"[]"
+    #bad13
+    authorize "admin","admin"
+    post '/eventos',:servicos=>"1",:lugares=>"1,2",:evento=>{nome:'Evento Test',:data_ini=>'2017/02/17T11:00',:data_fim=>'2017/02/17T12:00',:usuario_id=>2}
+    assert_equal last_response.body,"[]"
+    #bad14
+    authorize "admin","admin"
+    post '/eventos',:servicos=>"0",:lugares=>"1,2",:evento=>{nome:'Evento Test',:data_ini=>'2017/02/17T11:00',:data_fim=>'2017/02/18T12:00',:usuario_id=>2}
+    assert_equal last_response.body,"[]"
+    #bad15
+    authorize "admin","admin"
+    post '/eventos',:servicos=>"1",:lugares=>"0",:evento=>{nome:'Evento Test',:data_ini=>'2017/02/17T11:00',:data_fim=>'2017/02/18T12:00',:usuario_id=>2}
+    assert_equal last_response.body,"Lugar Not found\n"
+    #bad16
+    authorize "admin","admin"
+    post '/eventos',:servicos=>"0",:lugares=>"0",:evento=>{nome:'Evento Test',:data_ini=>'2017/02/17T11:00',:data_fim=>'2017/02/18T12:00',:usuario_id=>2}
+    assert_equal last_response.body,"Lugar Not found\n"
+   end
+
 end
