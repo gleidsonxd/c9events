@@ -141,21 +141,30 @@ end
 put     '/eventos/:id' do 
     protected!
     content_type :json
+    if params[:usuarioid] == nil
+        halt 404, "Not found\n"
+    end
+    if usuarioExist(params[:usuarioid]) ==false
+        halt 404, "Not found\n"
+    end
     evento = Evento.find(params[:id])
     if Usuario.find(params[:usuarioid]).admin.eql?false 
        # puts "Update nao admin"
         if adminOrOwner(params[:usuarioid],evento)
             if validaservico(evento)
-                evento.servicos.destroy
-                
-                if evento.update_attributes (params[:evento])
-                    #mailToCoord(create)
-                    status 200
-                    evento.to_json(:include => [:servicos, :lugars,:usuario])
+                if eventExist(evento.id)
+                    evento.servicos.destroy
+                    if evento.update_attributes (params[:evento])
+                        #mailToCoord(create)
+                        status 200
+                        evento.to_json(:include => [:servicos, :lugars,:usuario])
+                    else
+                        status 500
+                        json evento.errors.full_messages
+                    end
                 else
-                    status 500
-                    json evento.errors.full_messages
-                end
+                    halt 404, "Not found\n"
+                end 
             else
                 status 500
                 json evento.errors.full_messages
@@ -167,14 +176,17 @@ put     '/eventos/:id' do
         end
     else
        # puts "Update admin"
+    
         if evento.update_attributes (params[:evento])
             #mailToCoord(create)
             status 200
             evento.to_json(:include => [:servicos, :lugars,:usuario])
+
         else
             status 500
             json evento.errors.full_messages
         end
+       
     end
 end
 delete  '/eventos/:id' do 
@@ -243,13 +255,17 @@ put     '/servicos/:id' do
     protected!
     content_type :json
     if valida_admin(params[:usuarioid])
-        servico = Servico.find(params[:id])   
-        if servico.update_attributes (params[:servico])
-            status 200
-            servico.to_json(:include => :coord)
+        if servicoExist(params[:id])
+            servico = Servico.find(params[:id])   
+            if servico.update_attributes (params[:servico])
+                status 200
+                servico.to_json(:include => :coord)
+            else
+                status 500
+                json servico.errors.full_messages
+            end
         else
-            status 500
-            json servico.errors.full_messages
+            halt 404, "Not found\n"
         end
     else
         status 403
@@ -328,13 +344,17 @@ put     '/usuarios/:id' do  #APENAS ADMIN OU DONO
     if usuarioExist(params[:usuarioid]) != false
         user = Usuario.find(params[:usuarioid])
         if((user.admin.eql?true) || (Integer(params[:usuarioid]).eql?Integer(params[:id])))
-            usuario = Usuario.find(params[:id])   
-            if usuario.update_attributes (params[:usuario])
-                status 200
-                usuario.to_json
+            if usuarioExist(params[:id])    
+                usuario = Usuario.find(params[:id])   
+                if usuario.update_attributes (params[:usuario])
+                    status 200
+                    usuario.to_json
+                else
+                    status 500
+                    json usuario.errors.full_messages
+                end
             else
-                status 500
-                json usuario.errors.full_messages
+                halt 404, "Not found\n"
             end
         else
             status 403
@@ -411,14 +431,18 @@ put     '/lugars/:id' do
     protected!
     content_type :json
     if valida_admin(params[:usuarioid])
-        lugar = Lugar.find(params[:id])   
-        if lugar.update_attributes (params[:lugar])
-            status 200
-            lugar.to_json
+        if lugarExist(params[:id])
+            lugar = Lugar.find(params[:id])   
+            if lugar.update_attributes (params[:lugar])
+                status 200
+                lugar.to_json
+            else
+                status 500
+                json lugar.errors.full_messages
+            end
         else
-            status 500
-            json lugar.errors.full_messages
-        end
+            halt 404, "Not found\n"
+        end  
     else
         status 403
         json "Usuario sem acesso suficiente."
@@ -499,13 +523,17 @@ put      '/coords/:id' do
     protected!
     content_type :json
     if valida_admin(params[:usuarioid])
-        coord = Coord.find(params[:id])   
-        if coord.update_attributes (params[:coord])
-            status 200
-            coord.to_json
+        if coordExist(params[:id])
+            coord = Coord.find(params[:id])   
+            if coord.update_attributes (params[:coord])
+                status 200
+                coord.to_json
+            else
+                status 500
+                json coord.errors.full_messages
+            end
         else
-            status 500
-            json coord.errors.full_messages
+            halt 404, "Not found\n"
         end
     else
         status 403
