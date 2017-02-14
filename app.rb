@@ -213,8 +213,8 @@ get     '/servicos' do
     protected!
     content_type :json
         servicos = Servico.all
-        servicos.to_json
-    
+        #servicos.to_json(:include => :coord => {:only => :nome} )
+        servicos.to_json(:include => {:coord => { :only => [:id,:nome]}})
 end
 
 get     '/servicos/:id' do
