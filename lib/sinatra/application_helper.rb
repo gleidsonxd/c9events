@@ -182,6 +182,9 @@ module ApplicationHelper
   end
   
   def adminOrOwner(usuarioid,evento)
+    if ((usuarioid == nil)|| usuarioExist(usuarioid)==false)
+      halt 500, "Invalid\n"
+    end
       user =  Usuario.find(usuarioid)
     if (evento.usuario_id.eql?Integer(usuarioid)) || (user.admin.eql?true)
      # puts "Usuario criou o evento ou é admin"

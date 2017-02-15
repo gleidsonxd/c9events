@@ -151,10 +151,46 @@ class AppTest < Test::Unit::TestCase
     put'/coords/0', :usuarioid=>"1",:coord=>{nome:'Coord 2 Test'}
     assert_equal last_response.body,"Not found\n"
   end
+  #DELETE
+  def test_delete_coords
+    #good
+    authorize "admin","admin"
+    post '/coords',:usuarioid=>"1",:coord=>{nome:'Delete Coord',:email=>"delc@ifpb.edu.br"}
+    i = Coord.find_by('nome'=>'Delete Coord').id
+    delete "/coords/#{i}",:usuarioid=>"1"
+    assert_equal "\"A coordenação foi removida\"", last_response.body
+    assert Coord.find_by('nome'=>'Delete Coord').nil?
+    #bad1
+    authorize "admin","admin"
+    post '/coords',:usuarioid=>"1",:coord=>{nome:'Delete Coord',:email=>"delc@ifpb.edu.br"}
+    i = Coord.find_by('nome'=>'Delete Coord').id
+    authorize "",""
+    delete "/coords/#{i}",:usuarioid=>"1"
+    assert_equal "Not authorized\n", last_response.body
+    Coord.find_by('nome'=>'Delete Coord').destroy
+    assert Coord.find_by('nome'=>'Delete Coord').nil?
+    #bad2
+    authorize "admin","admin"
+    post '/coords',:usuarioid=>"1",:coord=>{nome:'Delete Coord',:email=>"delc@ifpb.edu.br"}
+    i = Coord.find_by('nome'=>'Delete Coord').id
+    delete "/coords/#{i}"
+    assert_equal "Invalid\n", last_response.body
+    Coord.find_by('nome'=>'Delete Coord').destroy
+    assert Coord.find_by('nome'=>'Delete Coord').nil?
+    #bad3
+    authorize "admin","admin"
+    post '/coords',:usuarioid=>"1",:coord=>{nome:'Delete Coord',:email=>"delc@ifpb.edu.br"}
+    i = Coord.find_by('nome'=>'Delete Coord').id
+    delete "/coords/0",:usuarioid=>"1"
+    assert_equal "Not found\n", last_response.body
+    Coord.find_by('nome'=>'Delete Coord').destroy
+    assert Coord.find_by('nome'=>'Delete Coord').nil?
+  end
+  
 
   ###############LUGARES#######################
   #LIST
-  def test_all_lugars
+  def test_all_lugares
    	#good
   	authorize "admin","admin"
     get '/lugars'
@@ -168,7 +204,7 @@ class AppTest < Test::Unit::TestCase
     
   end
   #GET
-  def test_one_lugars
+  def test_one_lugares
    	#good
   	authorize "admin","admin"
     get '/lugars/1',:usuarioid=>"1"
@@ -197,7 +233,7 @@ class AppTest < Test::Unit::TestCase
     assert_equal "Invalid\n", last_response.body
   end
   #POST
-  def test_create_lugars
+  def test_create_lugares
     #good
     authorize "admin","admin"
     post '/lugars',:usuarioid=>"1",:lugar=>{nome:'Lugar Test',:quantidade=>500}
@@ -237,7 +273,7 @@ class AppTest < Test::Unit::TestCase
     assert_equal last_response.body,"\"Usuario sem acesso suficiente.\""
 end
   #PUT
-  def test_update_lugars
+  def test_update_lugares
     #good1
     authorize "admin","admin"
     put'/lugars/3', :usuarioid=>"1",:lugar=>{nome:'Lugar 3 Test', quantidade:350}
@@ -288,6 +324,41 @@ end
     authorize "admin","admin"
     put'/lugars/0',:usuarioid=>"1",:lugar=>{nome:'Lugar 3 Test'}
     assert_equal last_response.body,"Not found\n"
+  end
+  #DELETE
+  def test_delete_lugares
+    #good
+    authorize "admin","admin"
+    post '/lugars',:usuarioid=>"1",:lugar=>{nome:'Delete Lugar',:quantidade=>500}
+    i = Lugar.find_by('nome'=>'Delete Lugar').id
+    delete "/lugars/#{i}",:usuarioid=>"1"
+    assert_equal "\"O local foi removido\"", last_response.body
+    assert Lugar.find_by('nome'=>'Delete Lugar').nil?
+    #bad1
+    authorize "admin","admin"
+    post '/lugars',:usuarioid=>"1",:lugar=>{nome:'Delete Lugar',:quantidade=>500}
+    i = Lugar.find_by('nome'=>'Delete Lugar').id
+    authorize "",""
+    delete "/lugars/#{i}",:usuarioid=>"1"
+    assert_equal "Not authorized\n", last_response.body
+    Lugar.find_by('nome'=>'Delete Lugar').destroy
+    assert Lugar.find_by('nome'=>'Delete Lugar').nil?
+    #bad2
+    authorize "admin","admin"
+    post '/lugars',:usuarioid=>"1",:lugar=>{nome:'Delete Lugar',:quantidade=>500}
+    i = Lugar.find_by('nome'=>'Delete Lugar').id
+    delete "/lugars/#{i}"
+    assert_equal "Invalid\n", last_response.body
+    Lugar.find_by('nome'=>'Delete Lugar').destroy
+    assert Lugar.find_by('nome'=>'Delete Lugar').nil?
+    #bad3
+    authorize "admin","admin"
+    post '/lugars',:usuarioid=>"1",:lugar=>{nome:'Delete Lugar',:quantidade=>500}
+    i = Lugar.find_by('nome'=>'Delete Lugar').id
+    delete "/lugars/0",:usuarioid=>"1"
+    assert_equal "Not found\n", last_response.body
+    Lugar.find_by('nome'=>'Delete Lugar').destroy
+    assert Lugar.find_by('nome'=>'Delete Lugar').nil?
   end
 
   ###############USUARIOS#######################
@@ -430,6 +501,42 @@ end
     put'/usuarios/0',:usuarioid=>"1",:usuario=>{nome:'Usuario 2 Test'}
     assert_equal last_response.body,"Not found\n"
   end
+  #DELETE
+  def test_delete_usuarios
+    #good
+    authorize "admin","admin"
+    post '/usuarios',:usuario=>{nome:'Delete Usuario',:email=>'usuariodelete@ifpb.edu.br',:matricula=>'123'}
+    i = Usuario.find_by('nome'=>'Delete Usuario').id
+    delete "/usuarios/#{i}",:usuarioid=>"1"
+    assert_equal "\"O usuario foi removido\"", last_response.body
+    assert Usuario.find_by('nome'=>'Delete Usuario').nil?
+    #bad1
+    authorize "admin","admin"
+    post '/usuarios',:usuario=>{nome:'Delete Usuario',:email=>'usuariodelete@ifpb.edu.br',:matricula=>'123'}
+    i = Usuario.find_by('nome'=>'Delete Usuario').id
+    authorize "",""
+    delete "/usuarios/#{i}",:usuarioid=>"1"
+    assert_equal "Not authorized\n", last_response.body
+    Usuario.find_by('nome'=>'Delete Usuario').destroy
+    assert Usuario.find_by('nome'=>'Delete Usuario').nil?
+    #bad2
+    authorize "admin","admin"
+    post '/usuarios',:usuario=>{nome:'Delete Usuario',:email=>'usuariodelete@ifpb.edu.br',:matricula=>'123'}
+    i = Usuario.find_by('nome'=>'Delete Usuario').id
+    delete "/usuarios/#{i}"
+    assert_equal "Invalid\n", last_response.body
+    Usuario.find_by('nome'=>'Delete Usuario').destroy
+    assert Usuario.find_by('nome'=>'Delete Usuario').nil?
+    #bad3
+    authorize "admin","admin"
+    post '/usuarios',:usuario=>{nome:'Delete Usuario',:email=>'usuariodelete@ifpb.edu.br',:matricula=>'123'}
+    i = Usuario.find_by('nome'=>'Delete Usuario').id
+    delete "/usuarios/0",:usuarioid=>"1"
+    assert_equal "Not found\n", last_response.body
+    Usuario.find_by('nome'=>'Delete Usuario').destroy
+    assert Usuario.find_by('nome'=>'Delete Usuario').nil?
+  end
+  
   #################SERVICOS########################
   #LIST
   def test_all_servicos
@@ -546,9 +653,44 @@ end
     put'/servicos/4',:usuarioid=>"2",:servico=>{nome:'Serv 4 Test'}
     assert_equal last_response.body,"\"Usuario sem acesso suficiente.\""
   end
+  #DELETE
+  def test_delete_servicos
+    #good
+    authorize "admin","admin"
+    post '/servicos',:usuarioid=>"1",:servico=>{nome:'Delete Servico',:tempo=>50,:coord_id=>3}
+    i = Servico.find_by('nome'=>'Delete Servico').id
+    delete "/servicos/#{i}",:usuarioid=>"1"
+    assert_equal "\"O servico foi removido\"", last_response.body
+    assert Servico.find_by('nome'=>'Delete Servico').nil?
+    #bad1
+    authorize "admin","admin"
+    post '/servicos',:usuarioid=>"1",:servico=>{nome:'Delete Servico',:tempo=>50,:coord_id=>3}
+    i = Servico.find_by('nome'=>'Delete Servico').id
+    authorize "",""
+    delete "/servicos/#{i}",:usuarioid=>"1"
+    assert_equal "Not authorized\n", last_response.body
+    Servico.find_by('nome'=>'Delete Servico').destroy
+    assert Servico.find_by('nome'=>'Delete Servico').nil?
+    #bad2
+    authorize "admin","admin"
+    post '/servicos',:usuarioid=>"1",:servico=>{nome:'Delete Servico',:tempo=>50,:coord_id=>3}
+    i = Servico.find_by('nome'=>'Delete Servico').id
+    delete "/servicos/#{i}"
+    assert_equal "Invalid\n", last_response.body
+    Servico.find_by('nome'=>'Delete Servico').destroy
+    assert Servico.find_by('nome'=>'Delete Servico').nil?
+    #bad3
+    authorize "admin","admin"
+    post '/servicos',:usuarioid=>"1",:servico=>{nome:'Delete Servico',:tempo=>50,:coord_id=>3}
+    i = Servico.find_by('nome'=>'Delete Servico').id
+    delete "/servicos/0",:usuarioid=>"1"
+    assert_equal "Not found\n", last_response.body
+    Servico.find_by('nome'=>'Delete Servico').destroy
+    assert Servico.find_by('nome'=>'Delete Servico').nil?
+  end
   #############EVENTOS###############
   #LIST
-  def test_all_events
+  def test_all_eventos
   	#good
   	authorize "admin","admin"
     get '/eventos'
@@ -561,7 +703,7 @@ end
     assert_equal "Not authorized\n", last_response.body
   end
   #GET
-  def test_one_events
+  def test_one_eventos
   	#good
   	authorize "admin","admin"
     get '/eventos/1'
@@ -571,7 +713,7 @@ end
     assert_equal last_response.body, "Not found\n"
    end
   #POST
-  def test_create_events
+  def test_create_eventos
     #good1 Craindo como usuario normal
     # authorize "admin","admin"
     # post '/eventos',:servicos=>"1,2",:lugares=>"1,2",:evento=>{nome:'Evento Test',:data_ini=>'2017/02/17T11:00',:data_fim=>'2017/02/17T12:00',:usuario_id=>2}
@@ -653,7 +795,7 @@ end
     assert_equal last_response.body,"Lugar Not found\n"
   end
   #PUT
-  def test_update_events
+  def test_update_eventos
     #good1
     authorize "admin","admin"
     put'/eventos/354', :usuarioid=>"1",:evento=>{nome:'Evento Test'}
@@ -695,4 +837,46 @@ end
     assert_equal last_response.body,"[]"
   end
   #DELETE
+  def test_delete_eventos
+    #good
+    authorize "admin","admin"
+    post '/eventos',:servicos=>"",:lugares=>"",:evento=>{nome:'Delete Evento',:data_ini=>'2017/02/16T11:00',:data_fim=>'2017/02/16T12:00',:usuario_id=>2}
+    i = Evento.find_by('nome'=>'Delete Evento').id
+    delete "/eventos/#{i}",:usuarioid=>"1"
+    assert_equal "\"O evento foi removido\"", last_response.body
+    assert Evento.find_by('nome'=>'Delete Evento').nil?
+    #bad1
+    authorize "admin","admin"
+    post '/eventos',:servicos=>"",:lugares=>"",:evento=>{nome:'Delete Evento',:data_ini=>'2017/02/16T11:00',:data_fim=>'2017/02/16T12:00',:usuario_id=>2}
+    i = Evento.find_by('nome'=>'Delete Evento').id
+    authorize "",""
+    delete "/eventos/#{i}",:usuarioid=>"1"
+    assert_equal "Not authorized\n", last_response.body
+    Evento.find_by('nome'=>'Delete Evento').destroy
+    assert Evento.find_by('nome'=>'Delete Evento').nil?
+    #bad2
+    authorize "admin","admin"
+    post '/eventos',:servicos=>"",:lugares=>"",:evento=>{nome:'Delete Evento',:data_ini=>'2017/02/16T11:00',:data_fim=>'2017/02/16T12:00',:usuario_id=>2}
+    i = Evento.find_by('nome'=>'Delete Evento').id
+    delete "/eventos/#{i}"
+    assert_equal "Invalid\n", last_response.body
+    Evento.find_by('nome'=>'Delete Evento').destroy
+    assert Evento.find_by('nome'=>'Delete Evento').nil?
+    #bad3
+    authorize "admin","admin"
+    post '/eventos',:servicos=>"",:lugares=>"",:evento=>{nome:'Delete Evento',:data_ini=>'2017/02/16T11:00',:data_fim=>'2017/02/16T12:00',:usuario_id=>2}
+    i = Evento.find_by('nome'=>'Delete Evento').id
+    delete "/eventos/0",:usuarioid=>"1"
+    assert_equal "Not found\n", last_response.body
+    Evento.find_by('nome'=>'Delete Evento').destroy
+    assert Evento.find_by('nome'=>'Delete Evento').nil?
+    #bad4
+    authorize "admin","admin"
+    post '/eventos',:servicos=>"",:lugares=>"",:evento=>{nome:'Delete Evento',:data_ini=>'2017/02/16T11:00',:data_fim=>'2017/02/16T12:00',:usuario_id=>2}
+    i = Evento.find_by('nome'=>'Delete Evento').id
+    delete "/eventos/#{i}",:usuarioid=>"3"
+    assert_equal "\"Error: Usuario NAO criou o evento e NAO é admin\"", last_response.body
+    Evento.find_by('nome'=>'Delete Evento').destroy
+    assert Evento.find_by('nome'=>'Delete Evento').nil?
+  end
 end

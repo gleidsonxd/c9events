@@ -192,7 +192,11 @@ end
 delete  '/eventos/:id' do 
     protected!
     content_type :json
-    evento = Evento.find(params[:id]) 
+    if eventExist(params[:id])
+      evento = Evento.find(params[:id]) 
+    else
+        halt 404, "Not found\n"
+    end
     if adminOrOwner(params[:usuarioid],evento)
         if evento.destroy
             status 200
@@ -277,13 +281,17 @@ delete  '/servicos/:id' do
     protected!
     content_type :json
     if valida_admin(params[:usuarioid])
-        servico = Servico.find(params[:id])   
-        if servico.destroy
-            status 200
-            json "O servico foi removido"
+        if servicoExist(params[:id])
+            servico = Servico.find(params[:id])   
+            if servico.destroy
+                status 200
+                json "O servico foi removido"
+            else
+                status 500
+                json "Ocorreu um erro ao remover o servico"
+            end
         else
-            status 500
-            json "Ocorreu um erro ao remover o servico"
+            halt 404, "Not found\n"
         end
     else
         status 403
@@ -370,13 +378,17 @@ delete  '/usuarios/:id' do #APENAS ADMIN
     protected!
     content_type :json
     if valida_admin(params[:usuarioid])
-        usuario = Usuario.find(params[:id])
-        if usuario.destroy
-            status 200
-            json "O usuario foi removido"
+        if usuarioExist(params[:id])
+            usuario = Usuario.find(params[:id])
+            if usuario.destroy
+                status 200
+                json "O usuario foi removido"
+            else
+                status 500
+                json "Ocorreu um erro ao remover o usuario"
+            end
         else
-            status 500
-            json "Ocorreu um erro ao remover o usuario"
+            halt 404, "Not found\n"
         end
     else
         status 403
@@ -453,13 +465,17 @@ delete  '/lugars/:id' do
     protected!
     content_type :json
     if valida_admin(params[:usuarioid])
-        lugar = Lugar.find(params[:id])
-        if lugar.destroy
-            status 200
-            json "O local foi removido"
+        if lugarExist(params[:id])
+            lugar = Lugar.find(params[:id])
+            if lugar.destroy
+                status 200
+                json "O local foi removido"
+            else
+                status 500
+                json "Ocorreu um erro ao remover o local"
+            end
         else
-            status 500
-            json "Ocorreu um erro ao remover o local"
+            halt 404, "Not found\n"
         end
     else
         status 403
@@ -545,14 +561,19 @@ delete   '/coords/:id' do
     protected!
     content_type :json
     if valida_admin(params[:usuarioid])
-        coord = Coord.find(params[:id])
-        if coord.destroy
-            status 200
-            json "A coordenação foi removida"
+        if coordExist(params[:id])
+            coord = Coord.find(params[:id])
+            if coord.destroy
+                status 200
+                json "A coordenação foi removida"
+            else
+                status 500
+                json "Ocorreu um erro ao remover a coordenação"
+            end
         else
-            status 500
-            json "Ocorreu um erro ao remover a coordenação"
+            halt 404, "Not found\n"
         end
+        
     else
         status 403
         json "Usuario sem acesso suficiente."
