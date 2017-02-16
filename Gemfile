@@ -9,6 +9,10 @@ gem 'protected_attributes'
 gem 'dotenv'
 gem 'mailfactory'
 gem "rack-test"
+
+group :production do
+    gem "pg"
+end
 group :development do
     gem "sqlite3"
 end

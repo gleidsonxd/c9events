@@ -1,9 +1,11 @@
-#development:
-#    adapter: postgresql
-#    database: eventosdb
-#    username: ubuntu
-#    password: root
-#    host: localhost
+production:
+  adapter: postgresql
+  encoding: unicode
+  database: eventosdb
+  pool: 2
+  username: xd
+  password: xd
+
 development:
   adapter: sqlite3
   database: db/development.sqlite3

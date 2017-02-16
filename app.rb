@@ -14,7 +14,10 @@ require 'net/smtp'
 require "openssl"
 require "base64"
 
-#set :environment, :development
+# configure :production do
+#   set :database, {adapter: 'postgresql',  encoding: 'unicode', database: 'eventosdb', pool: 2, username: 'xd', password: 'xd'}
+# end
+
 helpers ApplicationHelper
 
 
@@ -584,14 +587,14 @@ post     '/login' do
     #puts params[:password]
     senha = decrypt(params[:password])
     
-    if (params[:email]!="eventos-jp@ifpb.edu.br")
-         usuario = Usuario.all
-         usuario.each do |u|
-        if((params[:email]) == u.email)
-            return {:email => u.email, :id => u.id, :logado => 1, :pri => 0,:adm => u.admin,:tcoord => u.tcoord}.to_json
-        end
-    end
-    else
+    # if (params[:email]!="eventos-jp@ifpb.edu.br")
+    #      usuario = Usuario.all
+    #      usuario.each do |u|
+    #     if((params[:email]) == u.email)
+    #         return {:email => u.email, :id => u.id, :logado => 1, :pri => 0,:adm => u.admin,:tcoord => u.tcoord}.to_json
+    #     end
+    # end
+    # else
         settings = {
     		 address: ENV['EADDRESS'],
     		 port: ENV['EPORT'],
@@ -627,5 +630,5 @@ post     '/login' do
 
         end
         
-    end
+    #end
 end

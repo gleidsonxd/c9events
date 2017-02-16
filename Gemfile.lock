@@ -27,6 +27,7 @@ GEM
     mime-types-data (3.2016.0521)
     minitest (5.9.0)
     multi_json (1.12.1)
+    pg (0.19.0)
     protected_attributes (1.1.3)
       activemodel (>= 4.0.1, < 5.0)
     rack (1.6.4)
@@ -62,6 +63,7 @@ DEPENDENCIES
   activerecord
   dotenv
   mailfactory
+  pg
   protected_attributes
   rack-test
   rake
