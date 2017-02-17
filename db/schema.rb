@@ -13,6 +13,9 @@
 
 ActiveRecord::Schema.define(version: 20160822170256) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "coords", force: :cascade do |t|
     t.string "nome"
     t.string "email"
@@ -28,23 +31,23 @@ ActiveRecord::Schema.define(version: 20160822170256) do
     t.datetime "updated_at"
   end
 
-  add_index "eventos", ["usuario_id"], name: "index_eventos_on_usuario_id"
+  add_index "eventos", ["usuario_id"], name: "index_eventos_on_usuario_id", using: :btree
 
   create_table "eventos_lugars", id: false, force: :cascade do |t|
     t.integer "lugar_id"
     t.integer "evento_id"
   end
 
-  add_index "eventos_lugars", ["evento_id"], name: "index_eventos_lugars_on_evento_id"
-  add_index "eventos_lugars", ["lugar_id"], name: "index_eventos_lugars_on_lugar_id"
+  add_index "eventos_lugars", ["evento_id"], name: "index_eventos_lugars_on_evento_id", using: :btree
+  add_index "eventos_lugars", ["lugar_id"], name: "index_eventos_lugars_on_lugar_id", using: :btree
 
   create_table "eventos_servicos", id: false, force: :cascade do |t|
     t.integer "servico_id"
     t.integer "evento_id"
   end
 
-  add_index "eventos_servicos", ["evento_id"], name: "index_eventos_servicos_on_evento_id"
-  add_index "eventos_servicos", ["servico_id"], name: "index_eventos_servicos_on_servico_id"
+  add_index "eventos_servicos", ["evento_id"], name: "index_eventos_servicos_on_evento_id", using: :btree
+  add_index "eventos_servicos", ["servico_id"], name: "index_eventos_servicos_on_servico_id", using: :btree
 
   create_table "lugars", force: :cascade do |t|
     t.string  "nome"
@@ -57,7 +60,7 @@ ActiveRecord::Schema.define(version: 20160822170256) do
     t.integer "coord_id"
   end
 
-  add_index "servicos", ["coord_id"], name: "index_servicos_on_coord_id"
+  add_index "servicos", ["coord_id"], name: "index_servicos_on_coord_id", using: :btree
 
   create_table "usuarios", force: :cascade do |t|
     t.string   "nome"
