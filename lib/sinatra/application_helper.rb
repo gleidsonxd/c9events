@@ -106,7 +106,19 @@ module ApplicationHelper
     end
  
   end
- 
+  
+  def data_update_evento(eventoDataIni,eventoID)
+    evento =  Evento.all
+    evento.each do |e|
+      
+        if ((eventoDataIni >= e.data_ini) && (eventoDataIni <= e.data_fim))
+        # puts "Ja existe um evento nessa data"
+          return false
+        end
+      
+    end
+  end
+
   def valida_evento_data (servicos,eventoData)
     evento =  Evento.all
     evento.each do |e|

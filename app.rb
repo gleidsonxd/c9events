@@ -156,15 +156,15 @@ put     '/eventos/:id' do
         if adminOrOwner(params[:usuarioid],evento)
             if validaservico(evento)
                 if eventExist(evento.id)
-                    evento.servicos.destroy
-                    if evento.update_attributes (params[:evento])
-                        #mailToCoord(create)
-                        status 200
-                        evento.to_json(:include => [:servicos, :lugars,:usuario])
-                    else
-                        status 500
-                        json evento.errors.full_messages
-                    end
+                        evento.servicos.destroy
+                        if evento.update_attributes (params[:evento])
+                            #mailToCoord(create)
+                            status 200
+                            evento.to_json(:include => [:servicos, :lugars,:usuario])
+                        else
+                            status 500
+                            json evento.errors.full_messages
+                        end
                 else
                     halt 404, "Not found\n"
                 end 
