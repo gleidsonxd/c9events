@@ -18,6 +18,8 @@ require "base64"
 #   set :database, {adapter: 'postgresql',  encoding: 'unicode', database: 'eventosdb', pool: 2, username: 'xd', password: 'xd'}
 # end
 
+set :database_file, 'config/database.yml'
+
 helpers ApplicationHelper
 
 
