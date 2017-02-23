@@ -8,9 +8,9 @@ Para criar um evento, deve-se enviar alguns parametros:
 
 ```
 param nome,        String,            required, nome do evento
-param dataIni,     DateTime,          required, no formato dd/MM/yyyy T HH:mm
-param dataFim,     DateTime,          required, no formato dd/MM/yyyy T HH:mm. Fazer validação das datas.
-param desc,        String,                    a descrição do sistema
+param data_ini,     DateTime,          required, no formato dd/MM/yyyy T HH:mm
+param data_fim,     DateTime,          required, no formato dd/MM/yyyy T HH:mm. Fazer validação das datas.
+param descricao,        String,                    a descrição do sistema
 param usuario_id,  Int,               required,        id do usuario que está solicitando a criação do evento
 servicos,          String[],          required, Lista com IDs dos serviços.    
 lugares,           String[],          required, Lista com IDs dos lugares.
@@ -18,7 +18,7 @@ lugares,           String[],          required, Lista com IDs dos lugares.
   
 ```
 POST /eventos
-curl -d "evento[user_id]=1&evento[nome]=Evento tal&evento[dataIni]=10/10/2010T09:00&evento[dataFim]=10/10/2010T12:00&evento[desc]=Descricao Tall" localhost:3000/eventos -u admin:admin
+curl -d "evento[user_id]=1&evento[nome]=Evento tal&evento[data_ini]=10/10/2010T09:00&evento[data_fim]=10/10/2010T12:00&evento[descricao]=Descricao Tall" localhost:3000/eventos -u admin:admin
 
 Retorna o ID do evento criado:
 HTTP/1.1 200 Ok
@@ -36,17 +36,17 @@ O usuario que criar um evento tambem vai poder alterar esse evento. Para atualiz
 ```
 param id           Int              required, id do evento
 param nome,        String,          required, nome do evento
-param dataIni,     String,          required, no formato dd/MM/yyyy T HH:mm
-param dataFim,     String,          required, no formato dd/MM/yyyy T HH:mm. Fazer validação das datas.
-param desc,        String,                    a descrição do evento
-param usuario_id,     Int,          required, id do usuario que alterou o evento
+param data_ini,    DateTime,        required, no formato dd/MM/yyyy T HH:mm
+param data_fim,    DateTime,        required, no formato dd/MM/yyyy T HH:mm. Fazer validação das datas.
+param descricao,   String,                    a descrição do sistema
+param usuario_id,  Int,             required, id do usuario que alterou o evento
 param usuarioid,   Int,             required, id do usuario logado  
 
 ```  
 
 ```
 PUT /eventos
-curl -X PUT -d "evento[nome]=Evento_Mod&evento[dataIni]=10/10/2010 09:00&evento[dataFim]=10/10/2010 12:00&evento[desc]=Descricao Tall_mod&evento[usuario_id]=1&evento[servico_ids]=1&evento[lugars_ids]=2&usuarioid=1" localhost:3000/eventos/2 -u admin:admin
+curl -X PUT -d "evento[nome]=Evento_Mod&evento[data_ini]=10/10/2010 09:00&evento[data_fim]=10/10/2010 12:00&evento[descricao]=Descricao Tall_mod&evento[usuario_id]=1&evento[servico_ids][]=1&evento[lugars_ids][]=2&usuarioid=1" localhost:3000/eventos/2 -u admin:admin
 
 
 Retorna o ID do evento alterado:
