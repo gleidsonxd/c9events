@@ -3,8 +3,11 @@ production:
   encoding: unicode
   database: eventosdb
   pool: 2
-  username: xd
-  password: xd
+  username: <%= ENV['POSTGRES_USER'] %>
+  password: <%= ENV['POSTGRES_PASSWORD'] %>
+#  username: postgres
+#  password: postgres
+  host: localhost
 
 development:
   adapter: sqlite3
