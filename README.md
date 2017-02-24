@@ -18,7 +18,7 @@ lugares,           String[],          required, Lista com IDs dos lugares.
   
 ```
 POST /eventos
-curl -d "evento[user_id]=1&evento[nome]=Evento tal&evento[data_ini]=10/10/2010T09:00&evento[data_fim]=10/10/2010T12:00&evento[descricao]=Descricao Tall" localhost:3000/eventos -u admin:admin
+curl -d "evento[nome]=Eventotal&evento[data_ini]=10/10/2010T09:00&evento[data_fim]=10/10/2010T010:00&servicos=&lugares=&evento[usuario_id]=1" localhost:3000/eventos -u admin:admin
 
 Retorna o ID do evento criado:
 HTTP/1.1 200 Ok
