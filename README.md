@@ -8,9 +8,9 @@ Para criar um evento, deve-se enviar alguns parametros:
 
 ```
 param nome,        String,            required, nome do evento
-param data_ini,     DateTime,          required, no formato dd/MM/yyyy T HH:mm
-param data_fim,     DateTime,          required, no formato dd/MM/yyyy T HH:mm. Fazer validação das datas.
-param descricao,        String,                    a descrição do sistema
+param data_ini,    DateTime,          required, no formato dd/MM/yyyy T HH:mm
+param data_fim,    DateTime,          required, no formato dd/MM/yyyy T HH:mm. Fazer validação das datas.
+param descricao,   String,                    a descrição do sistema
 param usuario_id,  Int,               required,        id do usuario que está solicitando a criação do evento
 servicos,          String[],          required, Lista com IDs dos serviços.    
 lugares,           String[],          required, Lista com IDs dos lugares.
