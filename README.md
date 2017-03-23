@@ -239,7 +239,7 @@ param tcoord       Boolean,     required, Define se usuario é uma coordenação
 
 ```
 POST /usuarios
-curl -d "usuario[nome]=Nome_Usuario&usuario[email]=usuario@email.com&usuario[matricula]=123"localhost:3000/usuarios -u admin:admin
+curl -d "usuario[nome]=Nome_Usuario&usuario[email]=usuario@email.com&usuario[matricula]=123&usuario[admin]=true"localhost:3000/usuarios -u admin:admin
  
 Retorna a mensagem de sucesso:
 HTTP/1.1 200 Ok
@@ -263,7 +263,7 @@ param tcoord       Boolean,     required, Define se usuario é uma coordenação
 
 ```
 PUT /usuarios/2
-curl -X PUT -d "usuario[nome]=Nome_Usuario_Mod&usuario[matricula]=123&usuarioid=2"localhost:3000/usuarios/2 -u admin:admin
+curl -X PUT -d "usuario[nome]=Nome_Usuario_Mod&usuario[matricula]=123&usuarioid=2&usuario[admin]=false&usuario[tcoord]=true"localhost:3000/usuarios/2 -u admin:admin
 
 Retorna a mensagem de sucesso:
 HTTP/1.1 200 Ok
