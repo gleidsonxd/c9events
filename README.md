@@ -18,7 +18,7 @@ lugares,           String[],          required, Lista com IDs dos lugares.
   
 ```
 POST /eventos
-curl -d "evento[nome]=Eventotal&evento[data_ini]=10/10/2010T09:00&evento[data_fim]=10/10/2010T010:00&servicos=&lugares=&evento[usuario_id]=1" localhost:3000/eventos -u admin:admin
+curl -d "evento[nome]=Eventotal&evento[data_ini]=10/10/2010T09:00&evento[data_fim]=10/10/2010T010:00&servicos=1,2&lugares=1,2&evento[usuario_id]=1" localhost:3000/eventos -u admin:admin
 
 Retorna o ID do evento criado:
 HTTP/1.1 200 Ok
@@ -149,7 +149,7 @@ O usuario administrador vai poder alterar os serviços. Para atualizar um servi�
 param nome,        String,      required, nome do evento
 param tempo,       Int,         required, tempo para o servico ficar pronto. Tempo em dias
 param coord_id     Int,         required, id da coordenação.
-param usuarioid,        Int,      required, ID do usuario logado.
+param usuarioid,   Int,         required, ID do usuario logado.
 ```  
 
 ```
@@ -233,6 +233,8 @@ Os usuarios do sistema vão se logar utilizando o email institucional, na primei
 param nome,        String,      required, nome do usuario
 param email,       String,      required, email do usuario
 param matricula    String,      required, matricula do usuario
+param admin        Boolean,     required, Define se usuario é admin, Defaul: false;
+param tcoord       Boolean,     required, Define se usuario é uma coordenação, Defaul: false;
 ```
 
 ```
@@ -254,6 +256,8 @@ O usuario vai poder alterar os dados do seu cadastro, mas apenas o administrador
 param nome,        String,      required, nome do usuario
 param matricula    String,      required, matricula do usuario
 param usuarioid,   Int,         required, ID do usuario logado.
+param admin        Boolean,     required, Define se usuario é admin, Defaul: false;
+param tcoord       Boolean,     required, Define se usuario é uma coordenação, Defaul: false;
 
 ```
 
@@ -344,7 +348,7 @@ HTTP/1.1 200 Ok
 ```
 param nome,        String,      required, nome do lugar
 param quantidade,  Int,         required, quantidade de pessoas
-param usuarioid,        Int,      required, ID do usuario logado.
+param usuarioid,   Int,      required, ID do usuario logado.
 ```
 
 ```
